@@ -7,7 +7,7 @@ This repository provides a structured LaTeX writing template for theorem-driven 
 ## Core Features
 
 - A complete article scaffold with standing notation and assumptions, local lemmas/propositions/corollaries, a main theorem section, and appendix + notation glossary patterns
-- Two compile entrypoints: [`main.tex`](main.tex) (root build) and [`paper/main.tex`](paper/main.tex) (in-folder build)
+- A single compile entrypoint at [`paper/main.tex`](paper/main.tex), keeping all manuscript sources and build outputs inside `paper/`
 - [`paper/style.sty`](paper/style.sty): theorem environments, `cleveref` setup, hyperlink styling, abstract formatting
 - [`paper/extra.sty`](paper/extra.sty): TikZ helpers, math utility commands, TODO/list-of-todos system
 - Reusable figure architecture via wrappers in `paper/figures/examples/` and drawing primitives in `paper/elements/examples/`
@@ -22,10 +22,9 @@ This repository provides a structured LaTeX writing template for theorem-driven 
 
 ```text
 .
-|-- main.tex                  # Root compile entrypoint (targets content in paper/)
 |-- README.md
 |-- paper/
-|   |-- main.tex              # Standalone compile entrypoint inside paper/
+|   |-- main.tex              # Sole compile entrypoint
 |   |-- style.sty
 |   |-- extra.sty
 |   |-- refs.bib
@@ -63,7 +62,7 @@ This repository provides a structured LaTeX writing template for theorem-driven 
 
 ## Build / Compile
 
-### Option A (recommended): build from `paper/`
+Build from `paper/`:
 
 ```powershell
 cd paper
@@ -72,32 +71,22 @@ latexmk -pdf -interaction=nonstopmode -file-line-error main.tex
 
 Output: `paper/main.pdf`.
 
-### Option B: build from repository root
-
-```powershell
-latexmk -pdf -interaction=nonstopmode -file-line-error main.tex
-```
-
-Output: `main.pdf` at repository root.
-
 ### Troubleshooting stale build state
 
-If you switch between root and `paper/` builds and hit aux/bibliography path errors, clean and rebuild:
+If you hit auxiliary-file or bibliography-state errors, clean and rebuild from `paper/`:
 
 ```powershell
+cd paper
 latexmk -C main.tex
+latexmk -pdf -interaction=nonstopmode -file-line-error main.tex
 ```
-
-Run it once at repository root and once inside `paper/`, then compile again.
 
 ## Authoring Workflow
 
 1. Treat `paper/*/examples/` as reference templates. Create manuscript files in non-`examples/` paths such as `paper/chapters/`, `paper/figures/`, and `paper/elements/`.
    - Per [`style/latex_style_guide.txt`](style/latex_style_guide.txt), do not modify files under any `examples/` subfolder unless explicitly requested.
 2. Copy from [`paper/chapters/examples/core_template.tex`](paper/chapters/examples/core_template.tex) and [`paper/chapters/examples/appendix.tex`](paper/chapters/examples/appendix.tex) into your active chapter files.
-3. Update includes:
-   - In [`main.tex`](main.tex): use `\include{paper/chapters/<your-file>}`
-   - In [`paper/main.tex`](paper/main.tex): use `\include{chapters/<your-file>}`
+3. Update includes in [`paper/main.tex`](paper/main.tex) using `\include{chapters/<your-file>}`.
 4. Add or modify figures using wrapper files in `paper/figures/` and reusable TikZ primitives in `paper/elements/`.
 5. Update bibliography entries in [`paper/refs.bib`](paper/refs.bib), then rebuild with `latexmk`.
 
@@ -262,13 +251,12 @@ To move from a plain LaTeX `.zip` project and source code / experiment results i
 
 ## Cleaning Build Artifacts
 
-Run clean from the same directory as the `main.tex` you compiled:
+Run clean from `paper/`, the sole build directory:
 
 ```powershell
+cd paper
 latexmk -C main.tex
 ```
-
-If you compile both root and `paper/main.tex`, run clean in both locations.
 
 ## Notes / Limitations
 
