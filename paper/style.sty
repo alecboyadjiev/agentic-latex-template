@@ -112,6 +112,19 @@
 \crefname{assumption}{Assumption}{Assumptions}
 \crefname{context}{Context}{Contexts}
 \crefname{equation}{Equation}{Equations}
+\crefname{appendix}{Appendix}{Appendices}
+\Crefname{appendix}{Appendix}{Appendices}
+
+% Page label helper for \cref-based page references.
+\newcounter{pagerefanchor}
+\renewcommand{\thepagerefanchor}{\thepage}
+\crefalias{pagerefanchor}{page}
+\crefname{page}{page}{pages}
+\Crefname{page}{page}{pages}
+\newcommand{\pagelabel}[1]{%
+  \refstepcounter{pagerefanchor}%
+  \label{#1}%
+}
 
 % Ensure theorem-like hyperref destinations stay unique when theorem counters
 % reset by section.
@@ -141,6 +154,9 @@
 % Paper layout: compact paragraph indentation with centered AMS-like headings.
 \setlength{\parindent}{1.5em}
 \setlength{\parskip}{0pt}
+% Do not stretch display-math and section skips to force every page to the
+% same height; short draft pages should leave their unused space at the bottom.
+\raggedbottom
 
 \titleformat{\section}
   {\normalfont\large\bfseries\centering}
@@ -152,8 +168,14 @@
   {\thesubsection.}
   {0.5em}
   {}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\centering}
+  {\thesubsubsection.}
+  {0.5em}
+  {}
 \titlespacing*{\section}{0pt}{1.4\baselineskip}{0.75\baselineskip}
 \titlespacing*{\subsection}{0pt}{1.1\baselineskip}{0.5\baselineskip}
+\titlespacing*{\subsubsection}{0pt}{0.9\baselineskip}{0.4\baselineskip}
 
 \makeatletter
 \def\@shorttitle{}
@@ -210,6 +232,9 @@
 \AfterEndEnvironment{gather*}{\suppressindentafterdisplay}
 \AfterEndEnvironment{multline}{\suppressindentafterdisplay}
 \AfterEndEnvironment{multline*}{\suppressindentafterdisplay}
+\AfterEndEnvironment{itemize}{\suppressindentafterdisplay}
+\AfterEndEnvironment{enumerate}{\suppressindentafterdisplay}
+\AfterEndEnvironment{description}{\suppressindentafterdisplay}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
