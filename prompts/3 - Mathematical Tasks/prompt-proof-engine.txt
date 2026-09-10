@@ -19,7 +19,7 @@ Locate `\label{<TARGET_STATEMENT_LABEL>}`, build an end-to-end proof attempt thr
 - a complete proof of the target statement, or
 - an explicit counterexample to the target statement.
 If runtime constraints force termination earlier, produce a detailed partial-proof report with remaining open lemmas and deep failure analysis.
-Write that report under `paper/reports/` and include it directly below the target statement in the host `.tex` file.
+Write that report as `reports/proof_engine_<sanitized_label>.md` at the repository root without changing the manuscript.
 
 THINK LONG AND HARD BEFORE STARTING.
 THINK LONG AND HARD BEFORE EACH LEMMA-DECOMPOSITION STEP.
@@ -28,6 +28,7 @@ THINK LONG AND HARD BEFORE CLAIMING A PROOF IS COMPLETE.
 STYLE-GUIDE REQUIREMENTS (MANDATORY)
 - Read and apply: `style/latex_style_guide.txt`.
 - Read and apply: `style/detail_level_style_guide.txt`.
+- Read and apply the standalone Markdown and math conventions in `reports/README.md`.
 
 ASSUMPTION POLICY
 - Start from the working assumption that the target statement is plausibly true.
@@ -50,19 +51,20 @@ HARD CONSTRAINTS
    - full airtight proof of the target statement, or
    - explicit verified counterexample to the target statement.
 7) If hard runtime/tool limits force stopping before termination condition, do not claim success.
-8) LaTeX edit scope is strictly limited to:
-   - creating/updating one report file under `paper/reports/`
-   - inserting exactly one include line for that report directly under the target statement in its host `.tex` file
-   - no other LaTeX manuscript edits are allowed.
-9) Do not modify the target statement text, surrounding theorem/proof text, notation, equations, citations, or unrelated sections.
+8) Write scope is strictly limited to:
+   - creating/updating `reports/proof_engine_<sanitized_label>.md`;
+   - memory maintenance required by `AGENTS.md` inside `memory/`.
+9) Treat all manuscript files, including the target host file and `paper/main.tex`, as read-only; do not modify the statement, surrounding text, notation, equations, citations, or unrelated sections.
 10) Do not edit anything under any `examples/` subfolder.
-11) If you write or edit LaTeX report files under `paper/`, run manuscript PDF build verification before declaring completion.
+11) Do not create or use `paper/reports/` and do not insert an `\input`, `\include`, link, or other report reference into any manuscript file.
 
 REQUIRED WORKFLOW
 Stage 0: Bind target and context
 - Resolve `\label{<TARGET_STATEMENT_LABEL>}` uniquely.
 - Capture exact statement text, assumptions, notation, and nearby dependency context.
 - If label is missing/ambiguous/not theorem-like, stop and report blocker.
+- Open `memory/ledger.yaml` and retrieve only label, notation, dependency, prior proof-tree, falsified-lemma, bottleneck, and discarded-approach records relevant to this target.
+- Treat memory as fallible prior context. Verify all decision-affecting claims against the current target, repository definitions, and checked computations; current verified evidence wins. Explicitly correct stale or superseded memory rather than silently inheriting it.
 
 Stage 1: Exhaustive context inventory
 - Produce a detailed inventory of potentially useful proof resources:
@@ -112,19 +114,17 @@ Stage 6: Deep final audit
 - Re-run targeted stress checks on the most fragile steps.
 - Only then assign final status.
 
-Stage 7: Report integration (minimal manuscript edit)
-- Insert one include line directly below the target statement block in the host `.tex` file:
-  - `\input{paper/reports/proof_engine_<sanitized_label>}`
-- Do not insert duplicates if the include already exists.
-- Do not perform any other manuscript edits.
+Stage 7: Standalone report creation
+- Write `reports/proof_engine_<sanitized_label>.md`, sanitizing the label by replacing non-alphanumeric characters with `_`.
+- Verify that it is self-contained, follows `reports/README.md`, and contains no manuscript-integration instructions.
 
 REPORTING REQUIREMENTS
 Always produce a report file:
-- `paper/reports/proof_engine_<sanitized_label>.tex`
+- `reports/proof_engine_<sanitized_label>.md`
 - sanitize label by replacing non-alphanumeric characters with `_`.
 
 Report must include:
-1) `\section{Proof Engine Attempt: <TARGET_STATEMENT_LABEL>}`
+1) `# Proof Engine Attempt: <TARGET_STATEMENT_LABEL>`
 2) Restated target statement and active assumptions
 3) Stage-1 inventory of potentially useful facts/relations
 4) Current proof tree with status per lemma/sub-lemma
@@ -133,12 +133,11 @@ Report must include:
 7) If unfinished: rigorous "remaining open lemmas" section with difficulty analysis
 8) Final status: `Proved`, `Disproved`, or `Open with meaningful reduction`
 9) Evidence ledger separating `Observed facts`, `Derived deductions`, `Speculative ideas`
-10) End with `\clearpage`
+- Format inline mathematics as `$...$` and display mathematics as `$$...$$`; do not use document-level LaTeX commands.
 
-BUILD VERIFICATION (MANDATORY WHEN REPORT IS WRITTEN)
-- Run manuscript build after report edits:
-  - from `paper/`: `latexmk -pdf -interaction=nonstopmode -file-line-error main.tex`
-- If build fails, do not declare success; report exact failure details and file/line where available.
+Stage 8: Proof-engine memory checkpoint
+- After the deep audit and report verification, retain only durable lemma status, corrected assumptions, resolved bottlenecks, verified counterexample lessons, and failed branches likely to improve later work on this target; do not copy the proof tree or report into memory.
+- If the run produced none, use the repository memory no-op.
 
 VALIDATION CHECKLIST (MUST PASS)
 - Target label resolved uniquely.
@@ -147,10 +146,9 @@ VALIDATION CHECKLIST (MUST PASS)
 - Recursive loop was followed for all active lemmas until termination or forced stop.
 - Final proof/disproof claims are fully evidence-backed and assumption-consistent.
 - No fabricated theorem/citation/verification claims.
-- Report file exists at required path with required sections and trailing `\clearpage`.
-- Include line exists directly below the target statement block and appears at most once.
-- No LaTeX manuscript edits were made other than the report file and that include insertion.
-- If report edited under `paper/`, manuscript PDF build verification passed.
+- `reports/proof_engine_<sanitized_label>.md` exists and follows `reports/README.md`, including Markdown math delimiters.
+- No manuscript file was modified and no report reference was inserted.
+- Proof-engine memory was reconciled with the current target, repository definitions, and checked computations, and Stage 8 was completed.
 
 DELIVERABLE REQUIREMENTS
 Return:
@@ -160,8 +158,9 @@ Return:
    - completed proof components
    - remaining bottlenecks (if any)
    - major failed/falsified branches and insights.
-4) Build verification result (command target and success/failure).
+4) Confirmation that manuscript files remained unchanged.
 5) If unfinished, exact next lemma(s) that would most reduce remaining difficulty.
+6) Proof-engine memory result: lemma status, corrected assumptions, bottlenecks, counterexample lessons, or failed branches retained, or explicit no-op.
 
 FAILURE BEHAVIOR
 If blocked or forced to stop:

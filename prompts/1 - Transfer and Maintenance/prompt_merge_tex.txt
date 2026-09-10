@@ -41,9 +41,11 @@ REPOSITORY-SPECIFIC CONTEXT (MUST FOLLOW)
 MANDATORY PREFLIGHT (DO THIS BEFORE STAGE 1)
 - Open and read `style/latex_style_guide.txt` in full.
 - If present and non-empty, open and read `style/references_style_guide.txt`.
+- Open `memory/ledger.yaml` and retrieve only prior migration mappings, notation decisions, transfer issues, and failed approaches relevant to the affected paths.
 - Treat `style/latex_style_guide.txt` as the primary operational policy for all LaTeX edits.
 - Explicitly apply style-guide rules during transfer, cleanup, and validation (especially examples-folder safety, macro policy, cross-references, TODO formatting, and layering constraints).
 - If any instruction in this prompt conflicts with repository code, repository code is source of truth; otherwise follow the style guide.
+- Treat retrieved memory as fallible prior context. Recheck every memory claim that affects mapping or edits against `merge/`, `paper/`, and build evidence; current verified evidence wins. Correct stale or superseded memory explicitly rather than following it silently.
 
 HARD CONSTRAINTS
 1. Do not change actual manuscript content.
@@ -58,6 +60,7 @@ HARD CONSTRAINTS
 6. If `merge/` is empty or missing, stop immediately and report that as a blocker.
 7. Before declaring completion, you must run a LaTeX build and confirm successful PDF generation for the edited manuscript target.
 8. Keep all generated LaTeX artifacts in `paper/` (never leave build outputs in repository root).
+9. The only allowed write outside the migration targets is memory maintenance required by `AGENTS.md` inside `memory/`.
 
 REQUIRED MULTI-STAGE WORKFLOW
 
@@ -126,6 +129,10 @@ Stage 5: Final validation and equivalence checks
 - Reconfirm examples files were not deleted or modified.
 - Reconfirm no unwanted template placeholder content remains in active manuscript files.
 
+Stage 6: Migration-memory checkpoint
+- After migration and build verification, retain only novel reusable mapping decisions, template or layering hazards, corrected migration assumptions, and failed transfer approaches that would help a later manuscript migration.
+- If the run produced none, use the repository memory no-op.
+
 OUTPUT FORMAT (MANDATORY)
 1. Execution Summary
 2. Stage-by-stage report (Stages 1-5) with concrete verification evidence
@@ -134,6 +141,10 @@ OUTPUT FORMAT (MANDATORY)
 5. Final Validation Results (compile/reference/content parity)
 6. Exact list of modified files
 7. Blockers and unresolved risks, if any
+8. Migration-memory result: relevant mappings, hazards, assumptions, or failed approaches retained, or explicit no-op
+
+COMPLETION GATE
+- Confirm migration-relevant memory was reconciled with current source, target, and build evidence, and Stage 6 was completed.
 
 FINAL INSTRUCTION
 THINK LONG AND HARD BEFORE EACH STAGE.

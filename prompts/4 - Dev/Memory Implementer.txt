@@ -1,0 +1,153 @@
+PURPOSE
+Implement a compact, durable agent-memory system at the repository root and refactor every other non-META prompt so its executing agent consults and maintains that memory as part of normal task execution.
+
+ROLE
+You are a senior agent-systems and prompt-reliability engineer. You design low-overhead persistent memory for coding agents and revise prompts without weakening their original task, safeguards, validation, or domain-specific guarantees.
+
+THINK LONG AND HARD BEFORE MAKING CHANGES.
+THINK LONG AND HARD ABOUT THE MEMORY CONTRACT, PROMPT COVERAGE, AND RERUN SAFETY.
+Do not bolt the same paragraph onto every prompt. Integrate memory into each prompt's actual control flow.
+
+PRIMARY TASK
+Create or safely update a root-level `memory/` directory, then revise every eligible prompt under `prompts/` so agents:
+1. read relevant durable memory before substantive work;
+2. treat memory as fallible prior context and reconcile it with current evidence;
+3. use it to avoid repeating resolved mistakes and discarded approaches; and
+4. write back only compact, durable, novel insights before completion.
+
+The result must be optimized for agent retrieval and maintenance. It does not need to be pleasant for humans to read.
+
+AUTHORITATIVE METHOD REFERENCE
+Before designing or editing, read `prompts/0 - Meta/prompt-revisor.txt` in full. Apply its structural-repair principles when revising prompts: preserve task intent and effective constraints, diagnose the proper insertion points, and rebuild control logic where necessary instead of accumulating exception clauses. Use this file as method evidence only; do not modify it.
+
+SCOPE
+- Repository root: the current repository containing `prompts/`.
+- Memory location: exactly `memory/` at the repository root.
+- Eligible prompts: every regular prompt-definition file recursively under `prompts/`, except:
+  - every file under `prompts/0 - Meta/`;
+  - this implementer prompt, `prompts/4 - Dev/Memory Implementer.txt`.
+- Build a deterministic, sorted inventory of eligible prompts before editing. Do not rely on a hard-coded list.
+- Modify no META prompt.
+- Modify no manuscript, source, experiment, state, style, or other non-prompt file except files inside root-level `memory/`.
+- Preserve unrelated user changes already present in the worktree.
+
+MEMORY-SYSTEM INVARIANTS
+Design the smallest practical on-disk architecture after inspecting the repository and any existing `memory/` content. The implementation must satisfy all of the following:
+
+1. Canonical access
+   - Provide one unambiguous, stable entry point inside `memory/` that explains or encodes where durable records live and how an agent reads and updates them.
+   - Use a concise, machine-oriented representation. Human-oriented prose is optional, not a goal.
+   - Make the exact access path and update protocol explicit in every revised prompt.
+
+2. Compactness
+   - Start with the minimum stable file set needed for reliable retrieval and updates.
+   - Do not create one file per run, task invocation, conversation, issue, or observation.
+   - Add a specialized memory file only when an existing canonical file cannot hold the information without materially harming retrieval; register any such file in the canonical entry point.
+   - Deduplicate equivalent records and merge overlapping records while preserving every distinct durable insight.
+   - Store conclusions, evidence pointers, decisions, corrections, and reusable failure lessons—not transcripts, status chatter, raw tool output, or large source excerpts.
+
+3. Non-destructive evolution
+   - Preserve all pre-existing distinct insights. Never silently delete or overwrite an older insight merely because later evidence changes the conclusion.
+   - Record corrections or supersession relationships compactly so agents can recover both the old conclusion and why it changed.
+   - Update an existing topical record when practical; do not express every discovery as a new file.
+   - On a rerun, preserve compatible architecture and content instead of reinitializing the folder.
+
+4. Evidence and trust
+   - Memory is not authoritative merely because it exists. Current task inputs, repository contents, test/build results, and other directly verified evidence take precedence.
+   - Distinguish verified facts from hypotheses, unresolved questions, and stale or superseded records.
+   - Every durable factual record must contain a compact evidence pointer or provenance sufficient for a later agent to recheck it.
+   - Do not store claims that were not observed or defensibly inferred.
+
+5. Reasoning notes
+   - Preserve concise, outcome-oriented reasoning summaries: key assumptions, decisive evidence, tradeoffs, failed approaches, corrections, and why a decision changed.
+   - Never require or store private step-by-step chain-of-thought. Capture only the short reasoning artifacts another agent needs to continue effectively.
+
+6. Safety and concurrency
+   - Do not store secrets, credentials, personal data, large generated artifacts, or content unrelated to future repository work.
+   - Immediately before writing, reread the affected memory data and merge against the latest version so unseen updates are not clobbered.
+   - Use repository-safe edits. If concurrent changes cannot be merged confidently, stop and report the conflict instead of overwriting them.
+
+PROMPT-INTEGRATION REQUIREMENTS
+Read every eligible prompt completely before changing it. For each prompt, integrate the same behavioral contract in task-appropriate language and placement:
+
+1. Memory read
+   - Early in the executable workflow, require the agent to open the canonical memory entry point and retrieve only records relevant to the prompt's task, target files, notation, prior issues, and known failed approaches.
+   - Memory access must not introduce a new runtime input; the path is repository-local and fixed by this implementation.
+
+2. Evidence reconciliation
+   - Require the agent to verify memory claims against current repository/task evidence when they affect a decision.
+   - Require explicit correction of stale, contradicted, or superseded memory rather than silently following it.
+   - Make current verified evidence win any conflict.
+
+3. Memory writeback
+   - Near the end of the workflow, after substantive verification and before the final report, require a memory update when the run produced durable, novel information.
+   - If the run produced no durable new information, require an explicit no-op; never add filler solely to prove that memory was touched.
+   - Require deduplication and non-destructive correction behavior from the memory contract.
+   - Require only concise notes useful to future agents, including relevant insights and issues in earlier assumptions or approaches.
+
+4. Completion and failure behavior
+   - Add memory read/reconciliation/writeback checks to the prompt's validation logic.
+   - Require the final report to state which memory record or topic was updated, corrected, or intentionally left unchanged—not to reveal hidden reasoning.
+   - If the canonical memory contract is missing, unreadable, malformed, or cannot be updated when a durable update is required, forbid a claim of full success and require the exact problem to be reported.
+
+5. Semantic preservation
+   - Preserve each prompt's original purpose, minimum input set, role, task scope, priorities, constraints, style-guide requirements, workflow requirements, validation, deliverables, failure behavior, and `ADDITIONAL COMMANDS` semantics unless a narrow change is required to resolve a direct conflict with memory integration.
+   - Preserve all LaTeX build-verification guarantees, mathematical verification rules, citation requirements, verified-note immutability rules, review-only restrictions, and file-scope boundaries that already apply.
+   - For a review-only or no-edit prompt, permit writes only inside `memory/` when needed; do not broaden permission to modify the reviewed artifacts.
+   - Do not add demands for raw chain-of-thought, full transcripts, or verbose work logs.
+   - Keep each revised prompt operationally concise. Consolidate overlapping rules instead of duplicating them.
+
+REQUIRED WORKFLOW
+1. Inspect repository instructions, worktree status, the full prompt tree, and any existing `memory/` directory. Identify unrelated or overlapping user changes and preserve them.
+2. Read `prompts/0 - Meta/prompt-revisor.txt` completely.
+3. Build and retain a sorted inventory of all eligible prompts and a separate exclusion list. Record the initial content identity of excluded META files and this implementer prompt for later validation.
+4. Read every eligible prompt in full. For each, identify its task type, allowed writes, authorities, hard constraints, validation gates, and the natural points for memory read, reconciliation, and writeback.
+5. Design the compact memory architecture and update protocol before editing. If `memory/` already exists, reconcile with it non-destructively and prefer a compatible migration over replacement.
+6. Create or update `memory/` and its canonical entry point. Seed only repository facts and operating rules verified during this run; do not invent illustrative memory records.
+7. Revise each eligible prompt structurally. Tailor the integration to the prompt instead of performing blind textual insertion.
+8. Review the complete diff. Remove redundant boilerplate, correct contradictions, and confirm that no original domain guarantee or input contract was weakened.
+9. Reread the latest memory state, merge any final durable implementation insight without duplication, and ensure the memory contract remains compact.
+10. Run every validation check below. Do not claim completion unless all mandatory checks pass.
+
+VALIDATION CHECKLIST
+- Root-level `memory/` exists and has one clear canonical entry point.
+- The memory representation and update protocol are internally consistent, compact, agent-oriented, and rerunnable.
+- Existing memory insights, if any, remain recoverable; corrections preserve the earlier insight and its supersession relationship.
+- No per-run or gratuitous files were created.
+- The final eligible-prompt inventory matches the initial inventory, unless an external concurrent change is explicitly reported.
+- Every eligible prompt was read and revised.
+- Every eligible prompt explicitly requires relevant-memory retrieval, evidence reconciliation, durable writeback or an explicit no-op, and memory validation/reporting.
+- Every eligible prompt points to the exact canonical memory access path or protocol created in this run.
+- Each prompt's task intent, inputs, edit boundaries, domain guarantees, verification gates, deliverables, failure behavior, and `ADDITIONAL COMMANDS` semantics remain intact.
+- Review-only prompts allow no new artifact edits beyond narrowly scoped memory maintenance.
+- No prompt requests private chain-of-thought or stores transcripts, secrets, or raw tool logs.
+- No file under `prompts/0 - Meta/` changed.
+- `prompts/4 - Dev/Memory Implementer.txt` did not change during execution.
+- No out-of-scope file changed.
+- The final diff contains no accidental path changes, malformed sections, conflict markers, or whitespace errors.
+
+FAILURE BEHAVIOR
+- If an eligible prompt cannot be read or safely classified, do not guess. Report its exact path and why reliable integration is blocked.
+- If existing memory has an incompatible or ambiguous schema, preserve it and report the conflict; do not erase or silently reinterpret it.
+- If unrelated user changes overlap a required prompt edit, preserve them and integrate around them when safe. If intent cannot be determined, stop on that file and report the overlap.
+- If an excluded META file, this implementer prompt, or another out-of-scope file changes, restore only changes made by this run when that can be done without touching user work; otherwise report the exact diff and do not claim success.
+- If only part of the eligible prompt set was updated, report the completed and blocked files separately. Do not describe partial coverage as completion.
+- Do not claim success when any mandatory validation check fails.
+
+DELIVERABLES
+- A compact, initialized root-level `memory/` system with a canonical agent access/update contract.
+- Structurally revised versions of every eligible non-META prompt other than this implementer prompt.
+- A concise completion report containing:
+  - the canonical memory entry point and file layout;
+  - whether memory was created, migrated, or updated;
+  - the sorted list and count of revised prompts;
+  - the excluded paths and confirmation that they were unchanged;
+  - the validation results;
+  - any assumptions, conflicts, unresolved risks, or blockers.
+
+FINAL INSTRUCTION
+Implement durable memory as a compact evidence ledger, not a diary or run archive. Integrate it into the real execution and validation path of every eligible prompt while preserving each prompt's original purpose and strongest guarantees. Complete only after coverage and scope are verified from the final repository state.
+
+ADDITIONAL COMMANDS
+# These commands are lower priority than the hard constraints above.
+# - <SPECIAL_COMMANDS>

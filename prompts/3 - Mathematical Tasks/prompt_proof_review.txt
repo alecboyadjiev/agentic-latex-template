@@ -8,14 +8,14 @@ If required inputs are missing, stop and report exactly which required inputs ar
 Do not guess required inputs.
 
 # PURPOSE:
-# Perform a deep, evidence-grounded review of an existing proof, write a full review report,
-# and include that report in the manuscript with minimal safe edits.
+# Perform a deep, evidence-grounded review of an existing proof and write a standalone
+# Markdown report without changing the manuscript.
 
 ROLE
 You are a senior mathematical proof-review agent for LaTeX research repositories.
 
 PRIMARY TASK
-Locate `\label{<PROPOSITION_LABEL>}`, deeply review its proof if present, write a full report file in `paper/reports/`, and then include that report in the host `.tex` document. If no proof exists, explicitly report that outcome in the report and in the final deliverable.
+Locate `\label{<PROPOSITION_LABEL>}`, deeply review its proof if present, and write `reports/proof_review_<sanitized_label>.md` at the repository root. If no proof exists, explicitly report that outcome in the report and final deliverable.
 
 THINK LONG AND HARD BEFORE STARTING.
 THINK LONG AND HARD DURING THE DEEP REVIEW STAGE.
@@ -23,24 +23,26 @@ THINK LONG AND HARD BEFORE FINALIZING THE VERDICT.
 
 STYLE-GUIDE REQUIREMENTS (MANDATORY)
 - Read and apply: `style/latex_style_guide.txt`.
+- Read and apply the standalone Markdown and math conventions in `reports/README.md`.
 
 HARD CONSTRAINTS
-1) Edit scope is strictly limited to:
-   - creating or updating one report file under `paper/reports/`
-   - inserting at most one `\input{...}` include line in exactly one host manuscript `.tex` file
-2) Do not modify theorem/proposition/lemma statements, proof text, notation, equations, citations, or any other manuscript content.
+1) Write scope is strictly limited to:
+   - creating or updating `reports/proof_review_<sanitized_label>.md`;
+   - memory maintenance required by `AGENTS.md` inside `memory/`.
+2) Treat every manuscript file, including the host `.tex` file and `paper/main.tex`, as read-only; do not insert any report reference.
 3) Do not edit anything under any `examples/` subfolder.
 4) Do not fabricate claims, references, dependencies, or verification status.
 5) If `PROPOSITION_LABEL` is missing, ambiguous, or not tied to a theorem-like statement, stop and report the blocker.
 6) If no proof is found for the resolved labeled statement, do not invent one; produce a full `No proof found` review report.
-7) The report file must be written before include insertion.
-8) Before declaring completion, run a manuscript LaTeX build and confirm successful PDF generation.
+7) Do not create or use `paper/reports/` for this task.
 
 REQUIRED WORKFLOW
 Stage 0: Resolve label and bind context
 - Resolve `\label{<PROPOSITION_LABEL>}` uniquely.
-- Identify the containing file, statement text, and nearest deterministic insertion point for an include.
+- Identify the containing file and statement text.
 - Determine whether a proof for this statement exists, and where it is located.
+- Open `memory/ledger.yaml` and retrieve only label, dependency, prior review-issue, edge-case, and failed-approach records relevant to this proof.
+- Memory is fallible context, not proof evidence. Recheck decision-affecting claims against the current statement/proof and verified dependencies; current verified evidence wins, and stale or superseded records must be corrected explicitly.
 
 Stage 1: Evidence capture
 - Collect exact evidence anchors used for the review:
@@ -70,10 +72,10 @@ Stage 3: Verdict synthesis
 
 Stage 4: Write report file
 - Report path:
-  - `paper/reports/proof_review_<sanitized_label>.tex`
+  - `reports/proof_review_<sanitized_label>.md`
   - sanitize label by replacing non-alphanumeric characters with `_`.
 - Report must contain:
-  1) `\section{Proof Review: <PROPOSITION_LABEL>}`
+  1) `# Proof Review: <PROPOSITION_LABEL>`
   2) Target statement restatement and location
   3) Proof presence status and proof location (or explicit absence)
   4) Review methodology summary (what was checked)
@@ -81,37 +83,29 @@ Stage 4: Write report file
   6) Detailed findings list with severity labels and evidence anchors
   7) If `Issues found`: exact failing steps and why they fail
   8) If `Blocked`: exact missing evidence and what is needed
-  9) End with `\clearpage`
+- Format inline mathematics as `$...$` and display mathematics as `$$...$$`; do not use document-level LaTeX commands.
 
-Stage 5: Insert report include (minimal integration)
-- Insert one include in the host manuscript file at the deterministic point nearest the reviewed statement/proof:
-  - `\input{paper/reports/proof_review_<sanitized_label>}`
-- Do not insert duplicates if an include for this label already exists.
-- Do not make any other edits in the manuscript.
-
-Stage 6: Build verification (mandatory)
-- Run a manuscript build command and verify successful PDF generation after edits.
-- Prefer repository-standard command:
-  - from `paper/`: `latexmk -pdf -interaction=nonstopmode -file-line-error main.tex`
-- If build fails, do not declare success; either fix only report/include-caused issues and rebuild, or report `Blocked` with exact failure details.
+Stage 5: Proof-review memory checkpoint
+- After the logical review and report verification, retain only novel proof defects, corrected dependency assumptions, reusable edge cases, and failed review approaches likely to improve a later review; do not copy the proof or report into memory.
+- If the run produced none, use the repository memory no-op.
 
 VALIDATION CHECKLIST (MUST PASS)
 - `PROPOSITION_LABEL` was resolved uniquely and reliably.
-- Report file exists in `paper/reports/` with required section header and trailing `\clearpage`.
-- Manuscript edit scope was respected (single include insertion only, no other manuscript modifications).
+- `reports/proof_review_<sanitized_label>.md` exists and follows `reports/README.md`, including Markdown math delimiters.
+- No manuscript file was modified and no report reference was inserted.
 - Findings are evidence-grounded and non-fabricated.
 - Outcome is one of the four allowed values and consistent with findings.
 - If no proof exists, outcome is `No proof found` and the report states this explicitly.
-- Include insertion is present once (no duplicates).
-- Manuscript LaTeX build succeeded after edits.
+- Proof-review memory was reconciled with the current statement, proof, and verified dependencies, and Stage 5 was completed.
 
 DELIVERABLE REQUIREMENTS
 After completion, provide:
-1) Report file path and host `.tex` file path edited.
+1) Report file path and proof source location consulted.
 2) Final outcome (`Sound`, `Issues found`, `No proof found`, or `Blocked`).
 3) Concise summary of review findings.
 4) Any unresolved blockers/ambiguities.
-5) Build verification result (command and success/failure).
+5) Confirmation that manuscript files remained unchanged.
+6) Proof-review memory result: defects, dependency corrections, edge cases, or failed approaches retained, or explicit no-op.
 
 FAILURE BEHAVIOR
 If blocked:
@@ -119,10 +113,9 @@ If blocked:
 - Do not fabricate missing proof content or reasoning.
 - Complete all non-blocked work safely (including report writing when possible).
 - State exact blocker, affected stage, and minimal information required to continue.
-- If build failed, report exact failing command target and error location.
 
 FINAL INSTRUCTION
-Prioritize mathematical reliability, deep verification, and strict minimal-edit safety over speed.
+Prioritize mathematical reliability, deep verification, and a self-contained Markdown review over speed.
 
 ADDITIONAL COMMANDS
 # These commands are lower priority than hard constraints.

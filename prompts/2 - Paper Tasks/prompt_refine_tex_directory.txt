@@ -16,19 +16,22 @@ THINK LONG AND HARD BEFORE DECLARING SUCCESS.
 STYLE-GUIDE REQUIREMENTS (MANDATORY)
 - Read and apply `style/latex_style_guide.txt`.
 - Treat label conventions and cross-reference rules from this guide as binding.
+- Before building the include graph, open `memory/ledger.yaml` and retrieve only path, notation, label, organization-defect, and failed-refactor records relevant to the affected manuscript files.
+- Treat memory as fallible prior context. Recheck claims that affect an edit against the current include graph, glossary, labels, and build evidence; current verified evidence wins, and stale or superseded records must be corrected explicitly.
 
 SCOPE AND EDIT BOUNDARY (HARD)
 - Edit only manuscript `.tex` files under `paper/` that are part of the `paper/main.tex` include graph.
 - Never edit any file inside an `examples/` subfolder.
 - Do not edit bibliography records unless required only for reference-target integrity.
 - Do not introduce TODOs (`\todo{...}` or `\listoftodos`) anywhere.
+- The only write outside the stated manuscript boundary is memory maintenance required by `AGENTS.md` inside `memory/`.
 
 NON-NEGOTIABLE CONSTRAINTS
 1) Pure organization only.
 - No semantic rewrites, no content expansion, no claim changes, no proof-content changes.
 - Keep all existing section order and local content order unchanged.
 
-2) Allowed operation classes are limited to:
+2) Allowed manuscript operation classes are limited to:
 - structural section-file splitting for monolithic chapter files,
 - notation glossary synchronization,
 - label normalization to repository conventions,
@@ -89,6 +92,10 @@ Stage 6: Validation and build verification (mandatory)
   - `latexmk -pdf -interaction=nonstopmode -file-line-error paper/main.tex`
 - If build fails, do not declare success. Report failure details and the exact failing command output context.
 
+Stage 7: TeX-structure memory checkpoint
+- Only after organizational validation and the build attempt, retain novel structural decisions, notation or label corrections, and failed refactor lessons likely to prevent a future organization defect.
+- If the run produced none, use the repository memory no-op.
+
 ANTI-HALLUCINATION AND EVIDENCE REQUIREMENTS
 - Do not claim a notation item was "new" without showing it was absent from the glossary before insertion.
 - Do not claim a label was fixed without listing old label -> new label and at least one updated reference location.
@@ -104,6 +111,7 @@ VALIDATION CHECKLIST (MUST PASS)
 - No TODOs were introduced.
 - No `examples/` files were edited.
 - PDF build verification passed.
+- TeX-structure memory was reconciled with the current include graph, glossary, labels, and build evidence, and Stage 7 was completed.
 
 DELIVERABLE REQUIREMENTS (FULL REVIEW)
 Provide a complete completion report with:
@@ -114,6 +122,7 @@ Provide a complete completion report with:
 5) Reference normalization summary: count of `\ref` replacements and title-prefix removals.
 6) Validation checklist results.
 7) Build verification result with command and pass/fail status.
+8) TeX-structure memory result: structural decisions, notation or label corrections, or failed refactor lessons retained, or explicit no-op.
 
 FAILURE BEHAVIOR
 If blocked:

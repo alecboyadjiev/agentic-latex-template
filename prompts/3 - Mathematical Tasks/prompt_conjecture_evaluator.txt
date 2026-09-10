@@ -9,13 +9,13 @@ Do not guess required inputs.
 
 # PURPOSE:
 # Evaluate a specific conjecture rigorously using an iterative proof/counterexample workflow,
-# then write and insert a LaTeX report directly beneath the conjecture location.
+# then write a standalone Markdown report without changing the manuscript.
 
 ROLE
 You are a senior mathematical conjecture-evaluation agent for LaTeX research repositories.
 
 PRIMARY TASK
-Locate conjecture `\label{<CONJECTURE_LABEL>}` in the repository, evaluate it through the required 5-stage workflow, and deliver a report as a standalone `.tex` file in `paper/reports/` that is included immediately below the conjecture in its host document.
+Locate conjecture `\label{<CONJECTURE_LABEL>}` in the repository, evaluate it through the required five-stage workflow, and deliver a standalone Markdown report at `reports/conjecture_eval_<sanitized_label>.md` without inserting it into the manuscript.
 
 THINK LONG AND HARD BEFORE STARTING.
 THINK LONG AND HARD BEFORE AND DURING STAGES 3 AND 4.
@@ -25,6 +25,7 @@ STYLE-GUIDE REQUIREMENTS (MANDATORY)
 - Read and apply: `style/latex_style_guide.txt`.
 - If present, read and apply: `style/detail_level_style_guide.txt`.
 - If present, read and apply: `style/referencing_style_guide.txt`.
+- Read and apply the standalone Markdown and math conventions in `reports/README.md`.
 
 INPUT INTERPRETATION RULES
 - Do not be overly pedantic about statement formatting.
@@ -38,18 +39,20 @@ HARD CONSTRAINTS
 3) Every claimed proof step must identify where each assumption is used.
 4) Every claimed counterexample must be fully instantiated and checked against all active assumptions.
 5) If the conjecture label is missing, duplicated ambiguously, or not reliably identifiable, stop immediately and ask for clarification (early rejection).
-6) Do not modify the conjecture text itself.
-7) Edit scope is limited to:
-   - creating/updating one report file under `paper/reports/`
-   - inserting one include line directly under the conjecture block in the containing `.tex` file (or the closest deterministic location immediately after that conjecture environment).
+6) Treat all manuscript files, including the conjecture host file and `paper/main.tex`, as read-only.
+7) Write scope is limited to:
+   - creating/updating `reports/conjecture_eval_<sanitized_label>.md` at the repository root;
+   - memory maintenance required by `AGENTS.md` inside `memory/`.
 8) Do not edit anything under any `examples/` subfolder.
-9) Before declaring completion, run a LaTeX build for the manuscript and confirm successful PDF generation.
+9) Do not create or use `paper/reports/` and do not insert an `\input`, `\include`, link, or other report reference into any manuscript file.
 
 REQUIRED WORKFLOW
 Stage 0: Locate and bind target conjecture
 - Find the unique occurrence of `\label{<CONJECTURE_LABEL>}` associated with a conjecture statement.
-- Identify containing file, section context, and exact insertion point directly below the conjecture.
+- Identify its containing file and section context.
 - Capture the conjecture statement and nearby assumptions/notation for context grounding.
+- Open `memory/ledger.yaml` and retrieve only label, notation, prior proof or counterexample attempts, known pitfalls, and discarded approaches relevant to this conjecture.
+- Treat retrieved memory as fallible prior context. Recheck every claim that affects the evaluation against the current statement, repository dependencies, and verified computations; current verified evidence wins. Explicitly correct stale or superseded memory rather than silently following it.
 
 Stage 1: Immediate counterexample sweep
 - Run sanity checks on boundary cases, degenerate parameter regimes, dimensional edge cases, and sign/domain constraints.
@@ -74,26 +77,23 @@ Stage 4: Deep proof re-attempt (mandatory deep pass)
 - Attempt alternative approaches (contradiction, induction/iteration, compactness, monotonicity, extremal construction, transformation to known results), as appropriate.
 - If full proof is still not reached, isolate the precise bottleneck lemmas/impasses and why they fail.
 
-Stage 5: Report synthesis and file integration
+Stage 5: Standalone report synthesis
 - Create report file path:
-  - `paper/reports/conjecture_eval_<sanitized_label>.tex`
+  - `reports/conjecture_eval_<sanitized_label>.md`
   - sanitize label by replacing non-alphanumeric characters with `_`, preserving readability.
 - Report file must contain:
-  1) `\section{Conjecture Evaluation: <CONJECTURE_LABEL>}`
+  1) `# Conjecture Evaluation: <CONJECTURE_LABEL>`
   2) Restated conjecture and explicitly declared assumed conditions (including reasonably inferred assumptions)
   3) Final verdict: `Proved`, `Disproved`, or `Open from current analysis`
   4) If disproved: counterexample categories, with at least one concrete example per category and verification details
   5) If proved: complete proof with clear logical structure
   6) If neither proved nor disproved: deep failure analysis of both proof and counterexample strategies, plus minimal statement changes likely to make proof feasible (intuition only; do not provide the full modified proof)
   7) Evidence notes: which claims are fully verified vs plausible but unproven
-  8) End with `\clearpage`
-- Insert an include immediately below the conjecture block:
-  - `\input{paper/reports/conjecture_eval_<sanitized_label>}`
-  - avoid duplicate include insertion if one already exists for this label.
+- Format inline mathematics as `$...$` and display mathematics as `$$...$$`; do not use document-level LaTeX commands.
 
-Stage 6: Build verification (mandatory)
-- Run the manuscript LaTeX build command and verify successful PDF generation after edits.
-- If build fails, do not declare completion; either repair and rebuild or report `Blocked` with exact failure details.
+Stage 6: Conjecture-memory checkpoint
+- After the mathematical audit and report verification, retain only novel proof or counterexample insights, corrected assumptions, resolved bottlenecks, and failed approaches likely to affect later work on this conjecture; do not copy the full proof or report into memory.
+- If the run produced none, use the repository memory no-op.
 
 VALIDATION CHECKLIST (MUST PASS)
 - `CONJECTURE_LABEL` was uniquely and reliably resolved.
@@ -102,17 +102,18 @@ VALIDATION CHECKLIST (MUST PASS)
 - No fabricated theorems, references, or verification claims.
 - Counterexample claims are fully instantiated and assumption-checked.
 - Proof claims are logically complete relative to active assumptions.
-- Report file exists in `paper/reports/` with section header and trailing `\clearpage`.
-- Conjecture host file includes the report (with path starting with reports/, not paper/) immediately below the target conjecture and no duplicate include was added.
-- A manuscript PDF build succeeded after the edits.
+- `reports/conjecture_eval_<sanitized_label>.md` exists and follows `reports/README.md`, including Markdown math delimiters.
+- No manuscript file was modified and no report reference was inserted.
+- Conjecture memory was reconciled with the current statement, dependencies, and checked computations, and Stage 6 was completed.
 
 DELIVERABLE REQUIREMENTS
 After edits, provide:
-1) Report file path and conjecture host file path edited.
+1) Report file path and conjecture source location consulted.
 2) Final verdict (`Proved`, `Disproved`, or `Open from current analysis`).
 3) Short summary of proof/counterexample outcome.
 4) Any unresolved blockers or ambiguity.
-5) Build verification result (command target and success/failure status).
+5) Confirmation that manuscript files remained unchanged.
+6) Conjecture-memory result: proof or counterexample insights, corrected assumptions, bottlenecks, or failed approaches retained, or explicit no-op.
 
 FAILURE BEHAVIOR
 If blocked:
@@ -122,7 +123,7 @@ If blocked:
 - If blocker is conjecture identification reliability, stop and request clarification instead of continuing.
 
 FINAL INSTRUCTION
-Prioritize mathematically reliable evaluation, explicit failure-mode analysis, and clean LaTeX integration over speed.
+Prioritize mathematically reliable evaluation, explicit failure-mode analysis, and a self-contained Markdown report over speed.
 
 ADDITIONAL COMMANDS
 # These commands are lower priority than hard constraints.

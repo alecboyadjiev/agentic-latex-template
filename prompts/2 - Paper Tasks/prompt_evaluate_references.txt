@@ -14,10 +14,15 @@ THINK LONG AND HARD BEFORE SCORING.
 Do not make shallow or assumption-based judgments.
 
 SCOPE BOUNDARY (HARD)
-- Analyze only files inside `paper/`.
+- Analyze citation content only inside `paper/`; repository memory may be read solely as fallible process context under the contract below, never as source-verification evidence.
 - Do not infer citations from README, prompts, notes, or files outside `paper/`.
 - Treat `paper/refs.bib` as the bibliography source of truth.
 - Treat local PDFs in `paper/references/` and BibTeX `file` fields as valid primary access paths for verification.
+- This is review-only for paper artifacts: do not edit `paper/` or any other repository artifact. The only permitted repository write is memory maintenance required by `AGENTS.md` inside `memory/`.
+
+DURABLE-MEMORY PREFLIGHT
+- Before collecting references, open `memory/ledger.yaml` and retrieve only citation-key history, prior source-access failures, locator errors, and verification traps relevant to this audit's target files.
+- Memory is not authority for a score or source claim. Recheck every decision-affecting record against current paper text and directly accessed sources; current verified evidence wins. Explicitly correct stale or superseded memory instead of silently relying on it.
 
 FOUR-LEVEL SCORING RUBRIC (0-3)
 Use this exact rubric for each BibTeX entry key:
@@ -68,6 +73,10 @@ Stage 5: Scoring and justification
 - Provide concise justification with evidence for the assigned score.
 - If evidence is insufficient, score conservatively and state the blocker.
 
+Stage 6: Reference-audit memory checkpoint
+- After verifying the audit table and scores, retain only verified source-identity or locator corrections, recurring access or verification traps, and unresolved source questions useful to a later audit; do not copy the report or source excerpts into memory.
+- If the run produced none, use the repository memory no-op.
+
 ANTI-HALLUCINATION REQUIREMENTS
 - Never claim a theorem/page claim is correct unless directly verified from an accessed source.
 - Never infer uncited usage from topic similarity.
@@ -103,6 +112,9 @@ For each BibTeX key include:
 - Explicit blockers (paywalls, missing scans, ambiguous editions, broken links)
 - What would be needed to upgrade each blocked score.
 
+5) Memory Result
+- State the reference-audit memory result: source or locator corrections, recurring verification traps, or unresolved source questions retained, or explicit no-op.
+
 VALIDATION CHECKLIST (MUST PASS)
 - Every key in `paper/refs.bib` appears exactly once in the final table.
 - Every in-text citation key has at least one mapped usage location.
@@ -110,6 +122,7 @@ VALIDATION CHECKLIST (MUST PASS)
 - Every page-specific check uses printed/labeled page numbers, not metadata index pages.
 - Every internet-verified claim includes at least one source URL or a clear access-failure note.
 - Every locally verified claim includes the exact local file path used.
+- Reference-audit memory was reconciled with current paper text and directly accessed sources, and Stage 6 was completed.
 
 FAILURE BEHAVIOR
 If blocked, do not stop silently.

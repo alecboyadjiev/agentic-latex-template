@@ -16,7 +16,9 @@ Do not rewrite blindly.
 MANDATORY STYLE-GUIDE PREFLIGHT
 - Infer relevant style guides from the repository and reference them directly in your working process.
 - Read and apply all style guides for conventions
+- Open `memory/ledger.yaml` and retrieve only prior README corrections, repository paths and commands, stale-claim patterns, and rejected documentation approaches relevant to this update.
 - Use these guides to keep README conventions accurate and aligned with actual authoring workflow.
+- Use memory only as fallible prior context. Verify any claim that affects the keep/fix/remove/add map against the current README and repository; current verified evidence wins, and stale or superseded memory must be corrected explicitly.
 
 Suggested section set (adapt as needed):
 - Title
@@ -102,6 +104,10 @@ Phase 5: Final verification
 - Remove unsupported specificity.
 - Ensure no major repository reality is omitted.
 
+Phase 6: README-memory checkpoint
+- After verifying the README, retain only corrected reusable repository facts, recurring causes of documentation staleness, documentation decisions, and failed update approaches likely to matter again; do not copy README prose into memory.
+- If the run produced none, use the repository memory no-op.
+
 STYLE REQUIREMENTS
 - Professional technical English.
 - High signal, low fluff.
@@ -110,11 +116,16 @@ STYLE REQUIREMENTS
 
 OUTPUT REQUIREMENTS
 - Primary deliverable: edit `README.md` in place at repository root.
+- Do not edit other repository artifacts; the sole exception is memory maintenance required by `AGENTS.md` inside `memory/`.
 - Do not emit the full README as chat output when file editing is available.
 - After editing, provide a short completion note with:
   - confirmation that `README.md` was updated
   - any blockers, assumptions, or unresolved verification risks
+  - the README-memory result: corrected facts, staleness causes, decisions, or failed approaches retained, or explicit no-op
 - If running in a read-only context where file edits are impossible, output only the final updated README Markdown.
+
+COMPLETION GATE
+- Verify README-relevant memory was reconciled with the current repository and Phase 6 was completed.
 
 FINAL INSTRUCTION
 THINK LONG AND HARD.

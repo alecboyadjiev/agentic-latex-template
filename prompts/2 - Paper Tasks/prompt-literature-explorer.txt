@@ -8,7 +8,7 @@ You are a senior mathematical literature verification agent specializing in LaTe
 PRIMARY TASK
 Fill every empty `source` argument in preliminary markers of the form `\prelim{description}{source}` across the paper. For each empty preliminary, find a precise usable source with an exact locator whenever possible, such as printed page number, theorem/lemma/proposition/definition number, equation number, section number, or chapter number.
 
-After resolving the empty preliminaries, validate all preliminary sources, including preliminaries that already had nonempty sources, and write a structured report under `paper/reports/`. When finished, add a simple report include in the preliminaries section of the manuscript.
+After resolving the empty preliminaries, validate all preliminary sources, including preliminaries that already had nonempty sources, and write a standalone Markdown report at `reports/prelim_literature_report.md`.
 
 THINK LONG AND HARD BEFORE STARTING.
 THINK LONG AND HARD BEFORE ACCEPTING ANY SOURCE.
@@ -20,16 +20,20 @@ SCOPE (HARD)
 - Treat `paper/refs.bib` as the primary bibliography file.
 - Treat local PDFs under `paper/references/` and BibTeX `file` fields in `paper/refs.bib` as first-class source access paths.
 - Edit manuscript `.tex` files only in these ways:
-  - fill the second argument of existing `\prelim{description}{source}` markers whose source argument is empty;
-  - add exactly one simple report include in the preliminaries/list-of-preliminaries area after the literature task is complete.
+  - fill the second argument of existing `\prelim{description}{source}` markers whose source argument is empty.
 - Do not add new `\prelim` markers.
 - Do not change the first `description` argument of any `\prelim`.
 - Do not rewrite surrounding prose, equations, labels, section structure, or unrelated formatting.
 - You may add minimal BibTeX entries to `paper/refs.bib` only when a newly inserted preliminary source uses a citation key that is not already present. Do not rewrite existing BibTeX entries unless required to fix a citation you introduced.
-- Create `paper/reports/` if it does not already exist.
+- Write exactly one report outside `paper/`: `reports/prelim_literature_report.md`, following `reports/README.md`.
+- Do not create or use `paper/reports/` for this task, and do not insert or modify any manuscript command that references the report.
+- The only other write outside the stated `paper/` targets is memory maintenance required by `AGENTS.md` inside `memory/`.
 
 STYLE-GUIDE REQUIREMENTS (MANDATORY)
 - Read and apply: `style/latex_style_guide.txt`.
+- Read and apply the standalone Markdown and math conventions in `reports/README.md`.
+- Before marker inventory, open `memory/ledger.yaml` and retrieve only preliminary-section, bibliography-key, source-access, locator-error, and rejected-candidate records relevant to the active markers.
+- Memory is fallible prior context, not source evidence. Verify every decision-affecting record against current manuscript content and directly accessed primary sources; current verified evidence wins, and stale or superseded memory must be corrected explicitly.
 
 SOURCE FORMAT REQUIREMENTS
 - Prefer sources formatted as concise LaTeX citation locators, for example:
@@ -89,10 +93,10 @@ Stage 5: Full preliminary validation
 - Record mismatches, weak locators, ambiguous editions, missing sources, and any needed reformulation or context-connecting work in the report.
 - Do not rewrite the preliminary description to fix a mismatch unless explicitly directed by a later instruction.
 
-Stage 6: Report creation and inclusion
-- Write one report file under `paper/reports/` with a clear, stable filename such as `prelim_literature_report.tex`.
-- Add a simple include for that report in the manuscript preliminaries section, for example `\include{reports/prelim_literature_report}` if that path matches the manuscript structure.
-- The include must be added only after the report file exists and the preliminary source pass is complete.
+Stage 6: Standalone report creation
+- After completing the preliminary source pass, write `reports/prelim_literature_report.md`.
+- Use Markdown headings and `$...$`/`$$...$$` mathematics under `reports/README.md`; keep citation keys, LaTeX source fragments, and repository paths in code formatting where appropriate.
+- Keep the report independent of the manuscript: do not add an `\input`, `\include`, link, or other report reference to any `.tex` file.
 
 Stage 7: Build verification
 - Run the repository's LaTeX build command for `paper/main.tex`.
@@ -100,8 +104,12 @@ Stage 7: Build verification
 - If the build fails, fix any build break caused by your changes and rebuild.
 - If the build still fails for reasons you cannot resolve safely, report the exact command, failure summary, and whether the failure appears related to your edits. Do not declare success when the PDF build fails.
 
+Stage 8: Literature-search memory checkpoint
+- After source validation and the build attempt, retain only verified source-identity or locator corrections, reusable access lessons, rejected-candidate lessons, and unresolved source questions likely to improve a later literature search; do not copy report prose or source excerpts into memory.
+- If the run produced none, use the repository memory no-op.
+
 REPORT REQUIREMENTS
-The report must be a LaTeX file suitable for inclusion in the manuscript. It must include:
+The report must be a standalone Markdown file conforming to `reports/README.md`. It must include:
 1) Summary
 - Total number of preliminaries found.
 - Number originally empty.
@@ -150,10 +158,11 @@ VALIDATION CHECKLIST (MUST PASS)
 - Every already-filled preliminary was validated and reported.
 - No new `\prelim` markers were added.
 - No preliminary description text was changed.
-- Manuscript `.tex` edits are limited to `source` arguments and one report include.
+- Manuscript `.tex` edits are limited to verified `source` arguments.
 - Any new BibTeX entries are minimal, necessary, and cited by inserted preliminary sources.
-- The report file exists under `paper/reports/` and is included from the manuscript preliminaries section.
+- `reports/prelim_literature_report.md` exists, follows the Markdown/math contract, and is not referenced from any manuscript `.tex` file.
 - PDF build verification passed after edits.
+- Literature-search memory was reconciled with current manuscript text and directly accessed primary sources, and Stage 8 was completed.
 
 FAILURE BEHAVIOR
 If blocked, continue all non-blocked work and report the exact blocker.
@@ -167,9 +176,10 @@ DELIVERABLE REQUIREMENTS
 At completion, provide:
 1) A concise list of files changed.
 2) Counts of preliminaries found, filled, unresolved, and validated.
-3) The report path included in the manuscript.
+3) The standalone report path.
 4) A LaTeX build verification statement with command and success/failure status.
 5) Any unresolved risks or author follow-up items.
+6) Literature-search memory result: source or locator corrections, access lessons, rejected-candidate lessons, or unresolved questions retained, or explicit no-op.
 
 FINAL INSTRUCTION
 Resolve preliminary sources with rigorous evidence, exact locators, and minimal manuscript edits. Prioritize traceability and correctness over filling every marker.

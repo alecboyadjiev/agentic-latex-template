@@ -1,0 +1,121 @@
+version: 2
+canonical_entry: memory/ledger.yaml
+storage:
+  root: memory/
+  manifest: memory/ledger.yaml
+  managed_files:
+    - id: repository-workflows
+      path: memory/repository-workflows.yaml
+      scope: [reports, prompt-workflows, artifact-location, markdown-math]
+      summary: Durable repository workflow and artifact-placement decisions used across task prompts.
+      format: yaml-records-v1
+      updated: 2026-09-08
+  topology_history:
+    - date: 2026-09-08
+      operation: create
+      paths: [memory/repository-workflows.yaml]
+      reason: A task-domain workflow decision now needs retrieval independent of the memory-system contract.
+      evidence:
+        - reports/README.md
+        - prompts/2 - Paper Tasks/prompt-literature-explorer.txt
+        - prompts/3 - Mathematical Tasks/
+status_values: [verified, hypothesis, open, superseded]
+protocol:
+  read:
+    - Open this file before substantive work; it is the only fixed entry point, not the only permitted memory file.
+    - Use storage.managed_files as the routing index. Select and read only files relevant to the task, target paths, notation, prior issues, and failed approaches.
+    - Treat an unregistered file under memory/ as a consistency problem to reconcile before relying on it.
+  trust:
+    - Treat every record as fallible prior context.
+    - Recheck decision-affecting claims against current task inputs, repository contents, and test or build evidence; current verified evidence wins.
+    - Keep verified facts, hypotheses, open questions, and superseded conclusions distinct.
+  write:
+    - Write only durable, novel conclusions, decisions, corrections, reusable failure lessons, and concise outcome-oriented rationale with recheckable evidence pointers.
+    - Do not store transcripts, status chatter, raw tool output, large excerpts or artifacts, secrets, credentials, personal data, or unrelated material.
+    - Keep system_records limited to durable decisions about the memory system itself. Store task-domain records in agent-created managed files so the manifest cannot become a topical monolith.
+    - Route each insight to the managed file that best supports future retrieval. Create a managed file when a separate scope or representation would improve retrieval; do not require an existing taxonomy or a minimum file count.
+    - During every memory write, inspect the affected files and registry for poor cohesion, excessive size, overlap, duplication, stale routing, or an organization better suited to agents. Perform useful splits, merges, renames, consolidation, or retirement in the same update rather than deferring maintenance indefinitely.
+    - Choose concise machine-oriented filenames, scopes, and representations from current memory contents and repository work patterns. No topical filenames or taxonomy are permanently prescribed.
+    - Do not create a file merely because a run, conversation, issue, or observation occurred. Do not create empty or redundant files.
+    - Register every managed file in storage.managed_files. Record only structural create, split, merge, rename, or retirement events in storage.topology_history; do not turn it into a run log.
+    - When moving records, preserve stable record IDs, evidence, status, history, and relations. Remove an old file only after all distinct information remains recoverable and the manifest records the move.
+    - Deduplicate equivalent claims and merge overlaps without losing distinct insights.
+    - For a correction, append the former state and summary to history before changing current fields. For a materially different replacement, preserve the old record as superseded and link both records.
+    - Immediately before editing, reread this file and every affected managed file, then merge against their latest contents. If concurrent changes cannot be merged confidently, do not overwrite; report the conflict.
+    - If no durable new information or useful structural maintenance was produced, leave memory unchanged.
+managed_file_schema:
+  required: [id, path, scope, summary, format, updated]
+  field_rules:
+    id: Stable lowercase-kebab-case file identifier independent of its path.
+    path: Repository-relative UTF-8 text file under memory/ other than memory/ledger.yaml.
+    scope: Agent-chosen retrieval keys describing the file's current contents; revise them when topology changes.
+    summary: Compact routing description sufficient to decide whether the file should be opened.
+    format: Machine-readable representation and schema identifier used by the file.
+    updated: ISO-8601 date of the latest content or topology change.
+topology_event_schema:
+  required: [date, operation, paths, reason, evidence]
+  field_rules:
+    date: ISO-8601 date.
+    operation: create, split, merge, rename, consolidate, or retire.
+    paths: All prior and resulting repository-relative memory paths affected by the operation.
+    reason: Compact retrieval or maintenance benefit; no run narration.
+    evidence: Record IDs, registry entries, or repository evidence that makes the structural decision recheckable.
+record_schema:
+  required: [id, scope, kind, status, summary, rationale, evidence, updated, history, relations]
+  field_rules:
+    id: Stable lowercase-kebab-case topical identifier.
+    scope: Short repository paths, task families, or notation tags used for retrieval.
+    kind: fact, decision, correction, failure-lesson, or open-question.
+    summary: Compact reusable conclusion; no hidden chain-of-thought.
+    rationale: Key assumptions, decisive evidence, or tradeoff only.
+    evidence: Nonempty list of repository paths with anchors, commands, tests, builds, or task provenance sufficient to recheck factual claims.
+    updated: ISO-8601 date.
+    history: Preserved prior states and correction reasons; empty list when never corrected.
+    relations: Mapping with supersedes and superseded_by ID lists.
+  applicability: Every durable record in every managed file follows this schema; the surrounding container format may vary and is declared in the registry.
+system_records:
+  - id: durable-memory-contract
+    scope:
+      - memory
+      - AGENTS.md
+      - prompts/1 - Transfer and Maintenance
+      - prompts/2 - Paper Tasks
+      - prompts/3 - Mathematical Tasks
+    kind: decision
+    status: verified
+    summary: Every repository agent starts at memory/ledger.yaml through root AGENTS.md; the ledger is a compact dynamic manifest, while agents create and reorganize registered memory files according to observed retrieval needs without a fixed taxonomy.
+    rationale: A fixed entry point makes discovery reliable, while agent-owned managed files prevent a monolithic ledger and allow the database topology to improve with repository work. AGENTS.md and this ledger own general memory behavior; task prompts retain only domain-specific retrieval, evidence, writeback, validation, and reporting hooks.
+    evidence:
+      - memory/ledger.yaml#canonical_entry
+      - memory/ledger.yaml#protocol
+      - AGENTS.md#durable-memory
+      - prompts/1 - Transfer and Maintenance/
+      - prompts/2 - Paper Tasks/
+      - prompts/3 - Mathematical Tasks/
+      - prompts/4 - Dev/Memory Implementer.txt#SCOPE
+    updated: 2026-09-04
+    history:
+      - date: 2026-09-04
+        prior_status: verified
+        prior_summary: Repository agents use memory/ledger.yaml as the single canonical durable-memory entry point and update it by the embedded protocol.
+        reason: Final scope validation showed that META prompts and the memory implementer are deliberately excluded, so the repository-wide wording was overbroad.
+        evidence:
+          - prompts/4 - Dev/Memory Implementer.txt#SCOPE
+      - date: 2026-09-04
+        prior_status: verified
+        prior_summary: The 13 eligible non-META task prompts under prompts/1, prompts/2, and prompts/3 use memory/ledger.yaml as the single canonical durable-memory entry point and require its read, reconciliation, and writeback/no-op protocol.
+        reason: The user clarified that agents must actively manage a multi-file memory database without hardcoded topical files, and that the rule must apply repository-wide through AGENTS.md.
+        evidence:
+          - AGENTS.md#durable-memory
+      - date: 2026-09-04
+        prior_status: verified
+        prior_summary: Every repository agent starts at memory/ledger.yaml through root AGENTS.md; the ledger is a compact dynamic manifest, while agents create and reorganize registered memory files according to observed retrieval needs without a fixed taxonomy.
+        reason: A prompt-revisor pass centralized general database behavior in AGENTS.md and the ledger while retaining only task-specific memory goals and checkpoints in eligible prompts.
+        evidence:
+          - prompts/0 - Meta/prompt-revisor.txt
+          - prompts/1 - Transfer and Maintenance/
+          - prompts/2 - Paper Tasks/
+          - prompts/3 - Mathematical Tasks/
+    relations:
+      supersedes: []
+      superseded_by: []

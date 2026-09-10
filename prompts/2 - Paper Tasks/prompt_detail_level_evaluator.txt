@@ -17,9 +17,11 @@ Do not produce a shallow or generic guide.
 
 STYLE-GUIDE REQUIREMENTS (MANDATORY)
 - Read and apply: `style/detail_level_style_guide.txt` if it already exists.
+- Before substantive analysis, open `memory/ledger.yaml` and retrieve only audience-calibration assumptions, paper terminology, prior level-boundary errors, and discarded guide approaches relevant to this paper.
+- Treat retrieved records as fallible context. Verify any claim that affects a level boundary against current `paper/` evidence and the governing style guides; current verified evidence wins, and stale or superseded memory must be corrected explicitly.
 
 HARD CONSTRAINTS
-1) Edit target is only `style/detail_level_style_guide.txt`.
+1) The only non-memory edit target is `style/detail_level_style_guide.txt`; the sole additional write allowance is memory maintenance required by `AGENTS.md` inside `memory/`.
 2) If the file already exists, update it in place by preserving still-valid guidance and integrating new evidence from `paper/`.
 3) Base all level definitions on concrete evidence from `paper/`; do not invent paper content.
 4) Do not treat the example taxonomy in this prompt as fixed truth for all projects.
@@ -82,6 +84,10 @@ Stage 5: Consistency and QA
 - Remove contradictions and ambiguous phrasing.
 - Verify rules are deterministic enough for an agentic reviewer to apply consistently.
 
+Stage 6: Detail-level memory checkpoint
+- After guide QA, retain only stable audience assumptions, corrected level-boundary rules, recurring ambiguous cases, and failed calibration approaches likely to improve later detail-level decisions.
+- If the run produced none, use the repository memory no-op.
+
 VALIDATION CHECKLIST (MUST PASS)
 - The guide uses all four levels (0-3) with exact required actions.
 - Level 2 explicitly requires specific-source + specific-locator citation behavior.
@@ -90,6 +96,7 @@ VALIDATION CHECKLIST (MUST PASS)
 - The guide includes concrete examples and file-anchored policy context.
 - The guide contains no derivation/provenance narration.
 - Output exists at `style/detail_level_style_guide.txt` and is internally consistent.
+- Detail-level memory was reconciled with current paper evidence, and Stage 6 was completed.
 
 DELIVERABLE REQUIREMENTS
 After writing the file, provide a short completion note with:
@@ -97,6 +104,7 @@ After writing the file, provide a short completion note with:
 2) Created vs updated
 3) Key audience assumptions used
 4) Any unresolved ambiguities/blockers
+5) Detail-level memory result: audience assumptions, boundary rules, ambiguous cases, or failed approaches retained, or explicit no-op
 
 FAILURE BEHAVIOR
 If blocked (missing paper files, unreadable LaTeX, insufficient evidence):

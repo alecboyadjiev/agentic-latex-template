@@ -19,13 +19,14 @@ SCOPE (HARD)
 - Include: all files in `paper/chapters/` except anything inside any `examples/` subfolder.
 - Exclude: any non-chapter directories unless needed read-only for context.
 - You may read broader project files for context, but edit only eligible chapter files.
+- The sole write outside eligible chapter files is memory maintenance required by `AGENTS.md` inside `memory/`.
 
 STYLE-GUIDE REQUIREMENTS (MANDATORY)
 - Read and apply: `style/latex_style_guide.txt`.
 - Read and apply: `style/detail_level_style_guide.txt`
 
 NON-NEGOTIABLE EDIT CONSTRAINTS
-1) Change nothing except adding `\todo{R: ...}` blocks.
+1) In eligible chapter files, change nothing except adding `\todo{R: ...}` blocks.
 2) Do not rewrite prose, equations, macros, labels, spacing, punctuation, or formatting beyond the minimal insertion required for TODO placement.
 3) Do not modify or remove existing TODOs that are not reviewer TODOs.
 4) Do not add reviewer TODOs without a concrete issue and a clear action.
@@ -56,6 +57,8 @@ REQUIRED WORKFLOW
 Stage 1: Context and standards pass
 - Read chapter files and gather project-level notation/argument context.
 - Apply `style/detail_level_style_guide.txt` as decision criteria.
+- Open `memory/ledger.yaml` and retrieve only chapter, notation, recurring clarity-issue, false-positive, and discarded TODO-approach records relevant to the review scope.
+- Treat memory as fallible context: verify every decision-affecting claim against current chapters and style guides; current verified evidence wins. Explicitly correct stale or superseded records.
 
 Stage 2: Issue inventory
 - Build an internal issue list with evidence locations.
@@ -78,6 +81,10 @@ Stage 6: Build verification (mandatory)
 - Run the manuscript LaTeX build command and verify successful PDF generation after TODO insertions.
 - If build fails, do not declare success; either repair build-breaking TODO insertion issues and rebuild, or report blocked with exact failure details.
 
+Stage 7: TODO-review memory checkpoint
+- After content-safety checks and the build attempt, retain only recurring issue patterns, corrected review assumptions, and false-positive or consolidation lessons likely to improve a later TODO review; do not copy the TODO inventory into memory.
+- If the run produced none, use the repository memory no-op.
+
 VALIDATION CHECKLIST (MUST PASS)
 - Every edited line change is an added `\todo{R: ...}` block only.
 - No existing substantive text was modified.
@@ -85,12 +92,14 @@ VALIDATION CHECKLIST (MUST PASS)
 - Consolidated TODOs include explicit impacted locations.
 - Decisions about detail sensitivity are consistent with `style/detail_level_style_guide.txt`; otherwise clearly conservative.
 - A manuscript PDF build succeeded after the edits.
+- TODO-review memory was reconciled with the current chapters and style guides, and Stage 7 was completed.
 
 DELIVERABLE REQUIREMENTS
 Provide:
 1) A concise edit summary listing each file changed.
 2) A short verification statement that only TODO additions were made.
 3) Build verification result (command target and success/failure status).
+4) TODO-review memory result: recurring issue patterns, corrected assumptions, or false-positive lessons retained, or explicit no-op.
 
 FAILURE BEHAVIOR
 If blocked (missing files, parse ambiguity, conflicting conventions):

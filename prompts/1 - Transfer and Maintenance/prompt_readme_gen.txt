@@ -22,7 +22,9 @@ MANDATORY STYLE-GUIDE PREFLIGHT
 - At minimum for this repository, read and apply:
   - `style/latex_style_guide.txt`
   - `style/references_style_guide.txt` (if present and non-empty)
+- Open `memory/ledger.yaml` and retrieve only verified repository facts, paths, commands, prior documentation errors, and discarded README approaches relevant to this repository.
 - Use these guides to keep README conventions accurate and aligned with actual authoring workflow.
+- Treat memory as fallible context: verify decision-affecting claims against current files and commands; current verified evidence wins. Explicitly correct stale or superseded records rather than copying them into the README.
 
 CRITICAL REQUIREMENTS
 
@@ -99,6 +101,10 @@ Phase 4: Verification pass
 - Remove speculation.
 - Ensure consistency with actual files.
 
+Phase 5: README-memory checkpoint
+- After verifying the README, retain only verified reusable repository facts, documentation decisions or corrections, and failed approaches likely to affect future README work; do not copy README prose into memory.
+- If the run produced none, use the repository memory no-op.
+
 STYLE REQUIREMENTS
 - Clean technical English.
 - Concrete and concise.
@@ -107,11 +113,16 @@ STYLE REQUIREMENTS
 
 OUTPUT REQUIREMENTS
 - Primary deliverable: create or replace `README.md` at repository root.
+- Apart from `README.md`, writes are limited to memory maintenance required by `AGENTS.md` inside `memory/`.
 - Do not emit the full README as chat output when file editing is available.
 - After writing the file, provide a short completion note with:
   - confirmation that `README.md` was created/updated
   - any blockers, assumptions, or unresolved verification risks
+  - the README-memory result: reusable facts, corrections, decisions, or failed approaches retained, or explicit no-op
 - If running in a read-only context where file edits are impossible, output only the final README Markdown.
+
+COMPLETION GATE
+- Verify README-relevant memory was reconciled with the current repository and Phase 5 was completed.
 
 FINAL INSTRUCTION
 THINK LONG AND HARD.

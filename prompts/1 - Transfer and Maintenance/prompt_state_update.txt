@@ -15,6 +15,10 @@ Do not produce a shallow scan.
 
 CRITICAL REQUIREMENTS
 
+0) State-memory preflight
+- Before inventory work, open `memory/ledger.yaml` and retrieve only state-file conventions, prior inventory discrepancies, corrected assumptions, and failed state-update approaches relevant to this run.
+- Treat those records as fallible prior context. Recheck decision-affecting claims against the current git-aware inventory and file contents; current verified evidence wins, and stale or superseded memory must be corrected explicitly.
+
 1) Canonical output files must be text files
 - The authoritative files are:
   - `state/current-state.txt`
@@ -85,10 +89,15 @@ Phase 4: Validation (mandatory)
   - first run: initial no-change entry
   - update run: explicit added/removed/modified breakdown
 
+Phase 5: State-memory checkpoint
+- After state validation, retain only recurring state-maintenance lessons, corrected inventory assumptions, and workflow decisions not already fully represented by the state files; never mirror their inventory or changelog into memory.
+- If the run produced none, use the repository memory no-op.
+
 DELIVERABLE REQUIREMENTS
 - Primary deliverables:
   - `state/current-state.txt` (complete current repository documentation)
   - `state/changelog.txt` (append-only run history in plain text)
+- No other artifact may be edited except memory maintenance required by `AGENTS.md` inside `memory/`.
 - Keep formatting stable and machine-friendly:
   - clear headings
   - consistent path formatting
@@ -99,6 +108,10 @@ FAILURE BEHAVIOR
 - If required files cannot be read, record explicit unreadable-file notes and report limitation.
 - If final validation fails, do not claim success.
 - Report exact blockers and which validation checks failed.
+
+FINAL REPORT REQUIREMENT
+- State the state-memory result: recurring maintenance lessons, corrected inventory assumptions, or workflow decisions retained, or explicit no-op.
+- Confirm the memory preflight, evidence reconciliation, and Phase 5 update/no-op checks passed.
 
 FINAL INSTRUCTION
 Produce a complete, evidence-based repository state update with zero hallucinated details.

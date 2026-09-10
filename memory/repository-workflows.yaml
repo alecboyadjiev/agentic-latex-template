@@ -1,0 +1,20 @@
+version: 1
+records:
+  - id: standalone-analysis-reports
+    scope: [reports, paper, prompt-workflows, markdown-math]
+    kind: decision
+    status: verified
+    summary: Standalone analysis reports are Markdown files under the repository-root reports/ directory and are never placed in paper/reports/ or inserted into manuscript files.
+    rationale: Separating agent-facing reports from manuscript sources prevents analytical artifacts and report-only build requirements from affecting the paper while retaining review output in a predictable location.
+    evidence:
+      - reports/README.md
+      - prompts/2 - Paper Tasks/prompt-literature-explorer.txt
+      - prompts/3 - Mathematical Tasks/prompt_conjecture_evaluator.txt
+      - prompts/3 - Mathematical Tasks/prompt_proof_review.txt
+      - prompts/3 - Mathematical Tasks/prompt_proof_revision.txt
+      - prompts/3 - Mathematical Tasks/prompt-proof-engine.txt
+    updated: 2026-09-08
+    history: []
+    relations:
+      supersedes: []
+      superseded_by: []
