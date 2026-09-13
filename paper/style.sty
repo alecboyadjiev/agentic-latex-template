@@ -86,18 +86,28 @@
 \newtheorem{corollary}[corollary]{Corollary}
 \aliascntresetthe{corollary}
 
-% Definitions, examples, and remarks share the same section-resetting counter
-% as the result-style environments, but keep upright body text.
+% Plain theorem-like environments share the result counter sequence, but each
+% needs its own alias counter so cleveref records the correct object type.
 \theoremstyle{customplainblock}
-\newtheorem{definition}[theorem]{Definition}
+\newaliascnt{definition}{theorem}
+\newtheorem{definition}[definition]{Definition}
+\aliascntresetthe{definition}
 \theoremstyle{customplainblock}
-\newtheorem{example}[theorem]{Example}
+\newaliascnt{example}{theorem}
+\newtheorem{example}[example]{Example}
+\aliascntresetthe{example}
 \theoremstyle{customplainblock}
-\newtheorem{remark}[theorem]{Remark}
+\newaliascnt{remark}{theorem}
+\newtheorem{remark}[remark]{Remark}
+\aliascntresetthe{remark}
 \theoremstyle{customplainblock}
-\newtheorem{assumption}[theorem]{Assumption}
+\newaliascnt{assumption}{theorem}
+\newtheorem{assumption}[assumption]{Assumption}
+\aliascntresetthe{assumption}
 \theoremstyle{customplainblock}
-\newtheorem{context}[theorem]{Context}
+\newaliascnt{context}{theorem}
+\newtheorem{context}[context]{Context}
+\aliascntresetthe{context}
 
 % Make \cref use capitalized labels by default.
 \crefname{theorem}{Theorem}{Theorems}

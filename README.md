@@ -124,7 +124,7 @@ Implementation lives in [`paper/extra.sty`](paper/extra.sty).
 ### Cross-Reference Conventions
 
 - Use `\cref{...}` for equation/theorem-style references.
-- Label prefixes used by the template and style guide: `sec:`, `ssec:`, `sssec:`, `eq:`, `def:`, `rem:`, `lem:`, `prop:`, `cor:`, `thm:`, `ex:`, `app:`.
+- Label prefixes used by the template and style guide: `sec:`, `ssec:`, `sssec:`, `eq:`, `def:`, `rem:`, `lem:`, `prop:`, `cor:`, `thm:`, `ex:`, `claim:`, `conj:`, `asm:`, `ctx:`, `app:`.
 
 ## Bibliography and References
 

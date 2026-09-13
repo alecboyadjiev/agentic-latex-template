@@ -72,7 +72,7 @@ Stage 3: Notation glossary synchronization
 
 Stage 4: Label normalization
 - Normalize non-compliant labels to style-guide prefixes:
-  - `sec:`, `ssec:`, `sssec:`, `eq:`, `def:`, `rem:`, `lem:`, `prop:`, `cor:`, `thm:`, `ex:`, `app:`
+  - `sec:`, `ssec:`, `sssec:`, `eq:`, `def:`, `rem:`, `lem:`, `prop:`, `cor:`, `thm:`, `ex:`, `claim:`, `conj:`, `asm:`, `ctx:`, `app:`
 - Keep already compliant labels unchanged.
 - When a label is renamed, update all inbound references in the manuscript include graph.
 

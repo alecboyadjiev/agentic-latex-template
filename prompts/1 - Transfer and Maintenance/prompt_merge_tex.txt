@@ -89,7 +89,7 @@ Stage 2: Perform the transfer into template structure
   - wire chapter files directly in `paper/main.tex` in exact order.
 - Convert theorem-like content into the proper environment blocks.
 - Preserve labels where possible and normalize new labels to repository prefixes:
-  - `sec:`, `ssec:`, `sssec:`, `eq:`, `def:`, `rem:`, `lem:`, `prop:`, `cor:`, `thm:`, `ex:`, `app:`
+  - `sec:`, `ssec:`, `sssec:`, `eq:`, `def:`, `rem:`, `lem:`, `prop:`, `cor:`, `thm:`, `ex:`, `claim:`, `conj:`, `asm:`, `ctx:`, `app:`
 - Prefer `\cref{...}` for references.
 - Convert TODOs to repository TODO format:
   - `\todo{...}` or `\listoftodos`

@@ -74,7 +74,7 @@ Use stable labels and reference through \cref by default.
 Label prefixes:
 - sec:, ssec:, sssec:
 - eq:
-- def:, rem:, lem:, prop:, cor:, thm:, ex:
+- def:, rem:, lem:, prop:, cor:, thm:, ex:, claim:, conj:, asm:, ctx:
 - app:
 
 Reference quality rules:
