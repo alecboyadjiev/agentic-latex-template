@@ -2,8 +2,13 @@
   "id": "prelim-finder",
   "risk": "green",
   "description": "Find and verify literature support for every active preliminary marker without editing the manuscript.",
-  "params": {},
-  "prompt": "All supplied inputs are valid; use them directly.\nYou are read-only; do not attempt writes.\n\nAct as a mathematical literature verification specialist. Inspect active non-example TeX files under paper/ and inventory every preliminary marker, including populated source arguments. Search paper/refs.bib, cached local references, and nearby citations before searching externally.\n\nFor each marker, find the strongest directly verified source and the most precise stable locator available: theorem, definition, equation, section, chapter, or printed page. Titles, abstracts, secondary summaries, and inaccessible full text are not verified support. Separate verified sources, plausible unverified candidates, inaccessible candidates, and unresolved markers. Never invent metadata or locators. Stop after finding the smallest sufficient verified source set.\n\nReturn ONLY a standalone Markdown report with summary counts; marker inventory and repository locations; verified recommendations with exact citation text and locators; checks of populated sources; unresolved markers and blockers; rejected or inaccessible candidates; author follow-up. Cite web sources with links and use Markdown math delimiters when needed.",
+  "params": {
+    "paper": {
+      "type": "paper_name",
+      "required": true
+    }
+  },
+  "prompt": "All supplied inputs are valid; use them directly.\nYou may write inside agent-data/ and are read-only elsewhere.\n\nAct as a mathematical literature verification specialist. Inspect active non-example TeX files under the resolved paper directory and inventory every preliminary marker, including populated source arguments. Search the resolved paper target's refs.bib, cached local references, and nearby citations before searching externally.\n\nFor each marker, find the strongest directly verified source and the most precise stable locator available: theorem, definition, equation, section, chapter, or printed page. Titles, abstracts, secondary summaries, and inaccessible full text are not verified support. Separate verified sources, plausible unverified candidates, inaccessible candidates, and unresolved markers. Never invent metadata or locators. Stop after finding the smallest sufficient verified source set.\n\nReturn ONLY a standalone Markdown report with summary counts; marker inventory and repository locations; verified recommendations with exact citation text and locators; checks of populated sources; unresolved markers and blockers; rejected or inaccessible candidates; author follow-up. Cite web sources with links and use Markdown math delimiters when needed.",
   "output": {
     "format": "markdown"
   }

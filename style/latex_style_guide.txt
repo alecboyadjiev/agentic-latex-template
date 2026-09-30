@@ -18,11 +18,11 @@ If this guide conflicts with repository code, code is the source of truth.
 ==================================================================
 2) FOLDER ROLES (USE THESE DIRECTLY)
 ==================================================================
-- paper/chapters: narrative document content
-- paper/figures: figure wrappers (layout/caption context)
-- paper/elements: reusable TikZ drawing components
-- paper/style.sty: theorem/reference/style conventions
-- paper/extra.sty: helper macros, TikZ setup, TODO system
+- papers/<paper>/chapters: narrative document content
+- papers/<paper>/figures: figure wrappers (layout/caption context)
+- papers/<paper>/elements: reusable TikZ drawing components
+- papers/<paper>/style.sty: theorem/reference/style conventions
+- papers/<paper>/extra.sty: helper macros, TikZ setup, TODO system
 
 Dependency direction:
 - chapters -> figures
@@ -32,9 +32,9 @@ Dependency direction:
 Hard safety rule:
 - NEVER modify anything inside any examples subfolder unless explicitly requested.
   Examples:
-  - paper/chapters/examples/
-  - paper/figures/examples/
-  - paper/elements/examples/
+  - papers/<paper>/chapters/examples/
+  - papers/<paper>/figures/examples/
+  - papers/<paper>/elements/examples/
 
 ==================================================================
 3) MATH WRITING QUALITY RULES
@@ -60,7 +60,7 @@ Good candidates:
 
 Do NOT create macros for one-off symbols or trivial single-use shorthands.
 When adding macros:
-- place them in the correct style/helper file (usually paper/extra.sty)
+- place them in the selected paper's correct style/helper file (usually `extra.sty`)
 - choose descriptive names
 - avoid collisions with standard LaTeX package commands
 - prefer backwards-compatible additions over breaking renames
@@ -108,8 +108,8 @@ Inline spacing rule (important):
 ==================================================================
 7) FIGURE CONTRIBUTION RULES
 ==================================================================
-- Put layout/context composition in paper/figures.
-- Put reusable drawing primitives in paper/elements.
+- Put layout/context composition in the selected paper's `figures/` directory.
+- Put reusable drawing primitives in the selected paper's `elements/` directory.
 - Do not duplicate large TikZ blocks across multiple files; extract shared parts.
 - Keep line widths, node sizing, and label density visually consistent within a figure set.
 - Prefer descriptive node/style names over opaque short names when adding new complex diagrams.
@@ -117,7 +117,7 @@ Inline spacing rule (important):
 ==================================================================
 8) BIBLIOGRAPHY AND CITATION RULES
 ==================================================================
-- Keep bibliography entries in paper/refs.bib.
+- Keep bibliography entries in the selected paper's `refs.bib`.
 - Use stable citation keys.
 - Prefer existing citation style behavior; do not change backend/style configuration unless requested.
 - When editing prose, ensure every new citation key resolves.

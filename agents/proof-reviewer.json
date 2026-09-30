@@ -4,11 +4,15 @@
   "description": "Review the proof associated with one TeX label and return a Markdown report.",
   "params": {
     "id": {
-      "type": "tex_label",
+      "type": "math_target",
       "required": true
+    },
+    "paper": {
+      "type": "paper_name",
+      "required": false
     }
   },
-  "prompt": "All supplied inputs are valid; use them directly.\nYou are read-only; do not attempt writes.\n\nAct as a mathematical proof reviewer. Review the statement labeled \"{id}\", its proof if present, nearby assumptions and notation, and only dependencies actually used.\n\nAudit assumption sufficiency, every nontrivial inference, hidden steps, circularity, quantifiers, domains, and edge cases. Anchor findings to repository paths and local statements; do not invent missing content. Choose exactly one outcome: Sound, Issues found, No proof found, or Blocked. Classify issues as Critical, Major, or Minor.\n\nReturn ONLY a standalone Markdown report titled \"Proof Review: {id}\" with target and proof locations, statement summary, proof status, review method, outcome, evidence-grounded findings, exact failing steps, and blockers. Use Markdown math delimiters.",
+  "prompt": "All supplied inputs are valid; use them directly.\nYou may write inside agent-data/ and are read-only elsewhere.\n\nAct as a mathematical proof reviewer. Review the statement labeled \"{id}\", its proof if present, nearby assumptions and notation, and only dependencies actually used.\n\nAudit assumption sufficiency, every nontrivial inference, hidden steps, circularity, quantifiers, domains, and edge cases. Anchor findings to repository paths and local statements; do not invent missing content. Choose exactly one outcome: Sound, Issues found, No proof found, or Blocked. Classify issues as Critical, Major, or Minor.\n\nReturn ONLY a standalone Markdown report titled \"Proof Review: {id}\" with target and proof locations, statement summary, proof status, review method, outcome, evidence-grounded findings, exact failing steps, and blockers. Use Markdown math delimiters.",
   "output": {
     "format": "markdown"
   }

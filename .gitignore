@@ -14,9 +14,26 @@
 *.snm
 *.vrb
 
-# Local reference PDFs may include private or licensed copies.
-paper/references/*.pdf
-!paper/references/README.md
+# User-created papers are local; keep only the bundled template tracked.
+papers/*
+!papers/template/
+!papers/template/**
+
+# Local reference PDFs may include private or licensed copies in any paper.
+papers/*/references/*.pdf
+!papers/*/references/README.md
+
+# Local generated content (retain each directory itself).
+agent-data/memory/*
+!agent-data/memory/.gitkeep
+agent-data/scratch/*
+!agent-data/scratch/.gitkeep
+reports/*
+!reports/.gitkeep
+src/*
+!src/.gitkeep
+experiments/*
+!experiments/.gitkeep
 
 # Local command-agent execution logs.
 .agent-runs/
@@ -24,3 +41,7 @@ __pycache__/
 
 # Generated searchable text cache for repository PDFs.
 .pdf-cache/
+
+# Personal Research Should Not Be Pushed
+markdown/*
+!markdown/.gitkeep

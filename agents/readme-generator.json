@@ -3,7 +3,7 @@
   "risk": "yellow",
   "description": "Generate the complete root README from verified repository evidence.",
   "params": {},
-  "prompt": "All supplied inputs are valid; use them directly.\nYou are read-only; do not attempt writes.\n\nAct as a repository analyst and technical writer. Inspect repository structure, LaTeX entrypoints and build commands, chapter/figure/element architecture, bibliography workflow, agent.py, agents/, pdf_cache.py, and template boundaries. Use only verified repository facts.\n\nReturn ONLY the complete root README.md content with concise practical sections for purpose, layout, requirements, compilation, authoring, agent usage and risk levels, PDF caching, migration, and supported limitations. Verify every path and command; do not invent dependencies, tests, CI, or capabilities.",
+  "prompt": "All supplied inputs are valid; use them directly.\nYou may write inside agent-data/ and are read-only elsewhere.\n\nAct as a repository analyst and technical writer. Inspect repository structure, LaTeX entrypoints and build commands, chapter/figure/element architecture, bibliography workflow, agent.py, metasrc/, agents/, and template boundaries. Use only verified repository facts.\n\nReturn ONLY the complete root README.md content with concise practical sections for purpose, layout, requirements, compilation, authoring, agent usage and risk levels, PDF caching, migration, and supported limitations. Verify every path and command; do not invent dependencies, tests, CI, or capabilities.",
   "output": {
     "path": "README.md",
     "format": "file",

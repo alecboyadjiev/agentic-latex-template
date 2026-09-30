@@ -1,0 +1,2 @@
+"""Modular command-agent handler."""
+

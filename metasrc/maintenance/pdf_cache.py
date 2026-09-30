@@ -2,7 +2,7 @@
 """Maintain an incremental, content-addressed text cache for repository PDFs.
 
 Run from anywhere with:
-    python pdf_cache.py
+    python -m metasrc.maintenance.pdf_cache
 
 The default root is the directory containing this script. Unchanged PDFs are
 identified from their path, size, and nanosecond filesystem timestamps, so the
@@ -38,7 +38,7 @@ class CacheError(Exception):
 
 
 def parse_args() -> argparse.Namespace:
-    script_root = Path(__file__).resolve().parent
+    script_root = Path(__file__).resolve().parents[2]
     parser = argparse.ArgumentParser(
         description="Incrementally cache searchable text from every PDF below a root."
     )
@@ -320,9 +320,9 @@ def prune_objects(cache_dir: Path, referenced: set[str]) -> int:
 def cache_pdfs(
     root: Path,
     cache_dir: Path,
-    verify: bool,
-    force: bool,
-    prune: bool,
+    verify: bool = False,
+    force: bool = False,
+    prune: bool = True,
 ) -> int:
     extractor_version = pypdf_version()
     previous_manifest = read_json(cache_dir / MANIFEST_NAME)

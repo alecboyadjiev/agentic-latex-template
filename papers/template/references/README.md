@@ -12,9 +12,9 @@ Recommended convention:
 }
 ```
 
-The `file` path is relative to `paper/`, because the manuscript is built from
-that directory. Local reference links are hidden by default in the bibliography.
-Uncomment `\showlocalreferences` in `paper/main.tex` to show them.
+The `file` path is relative to this paper directory, because the manuscript is
+built from that directory. Local reference links are hidden by default in the
+bibliography. Uncomment `\showlocalreferences` in `main.tex` to show them.
 
 Keep licensed or private PDFs out of git unless redistribution is explicitly
 allowed.
