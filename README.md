@@ -13,16 +13,19 @@ This repository provides a structured LaTeX writing template for theorem-driven 
 - Reusable figure architecture via wrappers in `paper/figures/examples/` and drawing primitives in `paper/elements/examples/`
 - Bibliography setup with `biblatex` (`backend=bibtex`) using [`paper/refs.bib`](paper/refs.bib)
 - Optional local-reference PDF workflow via `file` fields in [`paper/refs.bib`](paper/refs.bib) and files in [`paper/references/`](paper/references/)
-- Report output workspace at [`paper/reports/`](paper/reports/) for proof/conjecture task prompts
-- AI-oriented authoring guide in [`style/latex_style_guide.txt`](style/latex_style_guide.txt)
-- Prompt assets for repository workflows in [`prompts/`](prompts/)
-- Repository state ledgers at [`state/current-state.txt`](state/current-state.txt) and [`state/changelog.txt`](state/changelog.txt) for snapshot-style repository audits
+- Risk-scoped JSON agents in [`agents/`](agents/) executed through [`agent.py`](agent.py)
+- Standalone analysis output in the repository-root [`reports/`](reports/)
+- A single LaTeX-writing authority at [`style/latex_style_guide.txt`](style/latex_style_guide.txt)
 
 ## Repository Layout
 
 ```text
 .
 |-- README.md
+|-- agent.py                 # Risk-scoped agent runner and artifact handler
+|-- pdf_cache.py             # Incremental searchable-text cache for PDFs
+|-- agents/                  # JSON command-agent definitions
+|-- reports/                 # Handler-written Markdown analysis, grouped by agent
 |-- paper/
 |   |-- main.tex              # Sole compile entrypoint
 |   |-- style.sty
@@ -30,8 +33,6 @@ This repository provides a structured LaTeX writing template for theorem-driven 
 |   |-- refs.bib
 |   |-- references/
 |   |   `-- README.md         # Guidance for local reference PDFs
-|   |-- reports/
-|   |   `-- .gitkeep
 |   |-- chapters/
 |   |   `-- examples/
 |   |       |-- core_template.tex
@@ -40,14 +41,6 @@ This repository provides a structured LaTeX writing template for theorem-driven 
 |   |   `-- examples/         # Figure wrappers used by chapters
 |   `-- elements/
 |       `-- examples/         # Reusable TikZ drawing building blocks
-|-- prompts/
-|   |-- 0 - Meta/
-|   |-- 1 - Transfer and Maintenence/
-|   |-- 2 - Paper Tasks/
-|   `-- 3 - Mathematical Tasks/
-|-- state/
-|   |-- current-state.txt
-|   `-- changelog.txt
 `-- style/
     `-- latex_style_guide.txt
 ```
@@ -58,7 +51,9 @@ This repository provides a structured LaTeX writing template for theorem-driven 
 
 - A LaTeX distribution with `pdflatex`, `bibtex`, and `latexmk`
 - MiKTeX or TeX Live full installs are recommended
-- No Python/Node/Cargo dependency setup is required for document compilation
+- Python 3.10+ and the Codex CLI are required for `agent.py`
+- `pypdf` is required for `pdf_cache.py` (`python -m pip install pypdf`)
+- No Node or Cargo dependency setup is required
 
 ## Build / Compile
 
@@ -70,6 +65,16 @@ latexmk -pdf -interaction=nonstopmode -file-line-error main.tex
 ```
 
 Output: `paper/main.pdf`.
+
+### PDF text cache
+
+Update the searchable-text cache for every PDF anywhere in the repository:
+
+```powershell
+python pdf_cache.py
+```
+
+The generated `.pdf-cache/` directory is ignored by Git. Normal runs use file size and nanosecond modification/change timestamps to avoid reading or hashing unchanged PDFs. A changed file alone is hashed and re-extracted; unchanged and duplicate content reuses its existing content-addressed cache object. Use `python pdf_cache.py --verify` for a full hash check or `--force` to re-extract everything.
 
 ### Troubleshooting stale build state
 
@@ -90,19 +95,75 @@ latexmk -pdf -interaction=nonstopmode -file-line-error main.tex
 4. Add or modify figures using wrapper files in `paper/figures/` and reusable TikZ primitives in `paper/elements/`.
 5. Update bibliography entries in [`paper/refs.bib`](paper/refs.bib), then rebuild with `latexmk`.
 
-## Style and Prompt System
+## Agent System
 
 This repository is designed to be used as an agentic workspace.
 
-- Prompt assets are grouped by workflow family under [`prompts/`](prompts/):
-  - [`prompts/0 - Meta/`](prompts/0%20-%20Meta/)
-  - [`prompts/1 - Transfer and Maintenence/`](prompts/1%20-%20Transfer%20and%20Maintenence/)
-  - [`prompts/2 - Paper Tasks/`](prompts/2%20-%20Paper%20Tasks/)
-  - [`prompts/3 - Mathematical Tasks/`](prompts/3%20-%20Mathematical%20Tasks/)
-- Use [`style/latex_style_guide.txt`](style/latex_style_guide.txt) as the primary conventions reference for AI and human edits inside `paper/`.
-- Apply the layering rule from the style guide during manuscript refactors: `chapters -> figures -> elements`.
-- Use [`state/current-state.txt`](state/current-state.txt) and [`state/changelog.txt`](state/changelog.txt) when maintaining repository state snapshots.
-- Style files are user-modifiable and intended to evolve with your authoring preferences.
+Use `agent.py` for every agent workflow. It validates parameters, renders them into the selected JSON prompt, applies the declared risk boundary, and records execution logs under `.agent-runs/`.
+
+- Green: the agent is read-only and returns a Markdown report written under `reports/<agent-id>/`.
+- Yellow: the agent is read-only, but its returned artifact is written into the repository by the handler: root `README.md` or a JSON definition under `agents/`. A yellow warning appears and worktree creation is offered with a default of no.
+- Red: the agent has genuine direct write access rooted at `paper/`. A red warning shows the writable location and requires `Y`; an isolated worktree is then recommended and selected by default. Without a worktree, red agents run synchronously in the current checkout. With a worktree they run asynchronously.
+
+All parameters are mandatory unless their JSON specification declares a default. Repeat `--p` with bare values to fill parameters in their displayed order, or use `--p "id=value"` to name one explicitly; named and positional forms may be mixed. Run `python agent.py --help` for the complete prompt catalog, or `python agent.py --agent <id> --help` for one prompt's ordered parameter contract and copyable commands. `agent.py` checks definitions, defaults, runtime values, lengths, regexes, choices, and unknown fields before Codex starts. The `tex_label` type requires exactly one active matching label under `paper/`; `repo_file` requires a readable repository-relative file inside the active workspace and can restrict allowed suffixes. Prompts expose only the task-facing guarantee `All supplied inputs are valid; use them directly.` Green and yellow prompts immediately add `You are read-only; do not attempt writes.`
+
+Each Markdown report is saved automatically as `reports/<agent-id>/DD-MM (N).md`. The daily sequence number is reserved atomically, so simultaneous processes cannot choose the same filename. A hyphen separates day and month because `/` is not valid in Windows filenames.
+
+Examples:
+
+```powershell
+python agent.py --agent agentic-advisor
+python agent.py --agent conjecture-evaluator --p "conj:template-global-upgrade"
+python agent.py --agent proof-reviewer --p "thm:template-convergence"
+python agent.py --agent proof-revisor --p "thm:template-convergence" --p "Replace the compactness assumption with sequential compactness."
+python agent.py --agent proof-engine --p "thm:template-convergence"
+python agent.py --agent prelim-finder
+python agent.py --agent evaluate-references
+python agent.py --agent todo-reviewer
+python agent.py --agent readme-updater
+python agent.py --agent merge
+python agent.py --agent refine-tex-directory
+```
+
+Green Markdown reports and yellow file updates detach automatically unless `--foreground` is supplied. Calling another command immediately starts another independent instance. The printed `manager.log` path is a live, unbuffered activity log containing lifecycle phases, streamed Codex output, validation, writes, failures, and completion details. Worktree creation requires a clean checkout because the worktree starts from `HEAD`. Agent changes in a worktree are never committed automatically; inspect and commit them manually before merging the generated branch.
+
+Use `--validate-only` to check an agent definition, its parameters, label resolution, and destination without running Codex.
+
+To run report agents concurrently, put the jobs in a JSON file:
+
+```json
+[
+  {
+    "agent": "proof-reviewer",
+    "params": {"id": "thm:template-convergence"}
+  },
+  {
+    "agent": "proof-engine",
+    "params": {"id": "thm:template-convergence"}
+  },
+  {
+    "agent": "prelim-finder",
+    "params": {}
+  }
+]
+```
+
+Then launch it:
+
+```powershell
+python agent.py --batch report-jobs.json
+```
+
+Batch mode accepts only Markdown-report agents, starts every listed job concurrently with no configured cap, and detaches immediately so the terminal remains available. Progress logs and the final `results.json` are written below `.agent-runs/batches/`; use `--foreground` to wait in the current terminal.
+
+Create and revise JSON definitions through the meta-agents:
+
+```powershell
+python agent.py --agent prompt-engineer --p "my-reviewer" --p "Create a focused read-only reviewer that returns a Markdown report."
+python agent.py --agent prompt-revisor --p "my-reviewer" --p "Reports miss concrete evidence anchors and repeat repository inventory."
+```
+
+`merge` and `refine-tex-directory` are the only direct-write agents. Their LaTeX instructions use [`style/latex_style_guide.txt`](style/latex_style_guide.txt), the repository's sole LaTeX-writing guide.
 
 ## LaTeX Conventions
 
@@ -242,12 +303,12 @@ Important:
 To move from a plain LaTeX `.zip` project and source code / experiment results into this agentic template:
 
 1. Unpack your source project into `merge/`.
-2. Run [`prompts/1 - Transfer and Maintenence/prompt_merge_tex.txt`](prompts/1%20-%20Transfer%20and%20Maintenence/prompt_merge_tex.txt) with your AI agent. No extra inputs are required.
+2. Run `python agent.py --agent merge` and accept the red warning. Use the recommended worktree when the checkout is clean.
 3. After the merge run reports success, validate the transfer result in `paper/` manually (content placement and compile status).
-4. Run [`prompts/2 - Paper Tasks/prompt_refine_tex_directory.txt`](prompts/2%20-%20Paper%20Tasks/prompt_refine_tex_directory.txt) to enforce repository-safe manuscript organization under `paper/`.
-5. Run [`prompts/2 - Paper Tasks/prompt_detail_level_evaluator.txt`](prompts/2%20-%20Paper%20Tasks/prompt_detail_level_evaluator.txt) to generate or update `style/detail_level_style_guide.txt` for audience-calibrated exposition depth.
-6. Manually copy source code into `src/` and experiment assets into `experiments/` when the paper depends on them.
-7. Run [`prompts/1 - Transfer and Maintenence/prompt_readme_update.txt`](prompts/1%20-%20Transfer%20and%20Maintenence/prompt_readme_update.txt) and [`prompts/1 - Transfer and Maintenence/prompt_state_update.txt`](prompts/1%20-%20Transfer%20and%20Maintenence/prompt_state_update.txt) to refresh repository documentation and state ledgers.
+4. Run `python agent.py --agent refine-tex-directory` to enforce repository-safe manuscript organization under `paper/`.
+5. Manually copy source code into `src/` and experiment assets into `experiments/` when the paper depends on them.
+6. Run `python agent.py --agent readme-updater` to refresh repository documentation.
+7. Use the JSON agents above for literature, conjecture, and proof analysis; their reports stay outside the manuscript in `reports/`.
 
 ## Cleaning Build Artifacts
 

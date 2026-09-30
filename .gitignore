@@ -17,3 +17,10 @@
 # Local reference PDFs may include private or licensed copies.
 paper/references/*.pdf
 !paper/references/README.md
+
+# Local command-agent execution logs.
+.agent-runs/
+__pycache__/
+
+# Generated searchable text cache for repository PDFs.
+.pdf-cache/

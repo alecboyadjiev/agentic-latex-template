@@ -1,0 +1,11 @@
+{
+  "id": "refine-tex-directory",
+  "risk": "red",
+  "write_scope": "paper",
+  "description": "Perform a structure-only LaTeX refactor with direct paper write access.",
+  "params": {},
+  "prompt": "All supplied inputs are valid; use them directly.\n\nAct as a LaTeX structure and consistency specialist. You may write only inside the current paper directory. Read ../style/latex_style_guide.txt and inspect the include graph rooted at main.tex. Never edit examples/ or change mathematical claims, proofs, narrative meaning, or local content order.\n\nLimit edits to splitting multi-section chapter files at top-level section boundaries; synchronizing an existing notation glossary with notation introduced outside proofs; normalizing labels and inbound references; and replacing plain `\\ref` prose with grammatical `\\cref` usage. Do not invent a glossary, add TODOs, or alter bibliography entries unless reference integrity requires it.\n\nCheck the include graph, split maps, glossary uniqueness and source links, label mappings, remaining raw references, new TODO count, and untouched examples. Run `latexmk -pdf -interaction=nonstopmode -file-line-error main.tex` and repair refactor-caused failures.\n\nReturn a concise final summary with changed files, split and label maps, notation additions, reference-normalization counts, checks, build result, blockers, and unresolved risks. Claim success only after a successful build.",
+  "output": {
+    "format": "direct"
+  }
+}

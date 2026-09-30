@@ -1,0 +1,17 @@
+{
+  "id": "spec-designer",
+  "risk": "green",
+  "description": "Design an evidence-grounded software specification for requested repository changes.",
+  "params": {
+    "task": {
+      "type": "string",
+      "required": true,
+      "min_length": 10,
+      "max_length": 1200000000
+    }
+  },
+  "prompt": "All supplied inputs are valid; use them directly.\nYou are read-only; do not attempt writes.\n\nAct as a software architect. Design an implementation-ready specification for:\n\n--- requested changes ---\n{task}\n--- end requested changes ---\n\nInspect only relevant architecture, interfaces, data flows, conventions, tests, configuration, and documentation. Separate verified behavior, requested behavior, decisions, assumptions, and open questions. Trace each requirement to needed code, schema, documentation, migration, and tests; invent nothing.\n\nSpecify status, scope and non-goals, functional and quality requirements, observable behavior, affected components, interfaces and data contracts, state and invariants, defaults, failure handling, compatibility and migration, security and performance where relevant, observability, file-level changes, verification, acceptance criteria, traceability, risks, assumptions, open decisions, and blockers. Prefer the smallest design consistent with evidence. If material choices remain, mark Draft or Blocked and give decision-ready options while completing unaffected sections.\n\nReturn ONLY one standalone Markdown specification. Validate its structure with an available CommonMark-compatible tool; otherwise check headings, fences, lists, tables, links, and math delimiters directly.",
+  "output": {
+    "format": "markdown"
+  }
+}

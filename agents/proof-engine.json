@@ -1,0 +1,15 @@
+{
+  "id": "proof-engine",
+  "risk": "green",
+  "description": "Develop a proof or counterexample for one labeled mathematical statement and return a Markdown report.",
+  "params": {
+    "id": {
+      "type": "tex_label",
+      "required": true
+    }
+  },
+  "prompt": "All supplied inputs are valid; use them directly.\nYou are read-only; do not attempt writes.\n\nAct as a mathematical proof constructor. Develop a proof or counterexample for the statement labeled \"{id}\" using its active assumptions, notation, and only relevant repository results.\n\nBuild a proof skeleton with explicit nontrivial lemmas. Stress-test each lemma against boundary, degenerate, quantifier, scaling, and structural failures; recursively prove surviving lemmas or reduce them to smaller claims. Track nodes as proved, open but reduced, or falsified, and name assumptions used by each nontrivial inference. Switch to disproof if a fully checked counterexample emerges. Audit the final argument for hidden assumptions, circularity, and domain mismatches.\n\nChoose exactly one status: Proved, Disproved, Open with meaningful reduction, or Blocked.\n\nReturn ONLY a standalone Markdown report titled \"Proof Engine Attempt: {id}\" with target and assumptions, source locations, useful facts, proof tree, full proved arguments, verified counterexamples, open lemmas and failed approaches, final status, and an evidence ledger separating observations, deductions, and speculation. Use Markdown math delimiters.",
+  "output": {
+    "format": "markdown"
+  }
+}

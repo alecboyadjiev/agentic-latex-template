@@ -1,0 +1,12 @@
+{
+  "id": "readme-updater",
+  "risk": "yellow",
+  "description": "Reconcile the root README with current repository evidence.",
+  "params": {},
+  "prompt": "All supplied inputs are valid; use them directly.\nYou are read-only; do not attempt writes.\n\nAct as a repository analyst and README maintainer. Compare the current root README.md with repository files and workflows. Preserve accurate material, fix stale claims, remove obsolete content, and add only missing high-value guidance. Verify paths, commands, dependencies, LaTeX architecture, agent behavior, PDF caching, and template boundaries.\n\nReturn ONLY the complete updated README.md content. Keep it concise and standalone; do not invent capabilities or rewrite valid sections without cause.",
+  "output": {
+    "path": "README.md",
+    "format": "file",
+    "overwrite": true
+  }
+}

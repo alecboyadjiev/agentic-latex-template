@@ -1,0 +1,21 @@
+{
+  "id": "proof-revisor",
+  "risk": "green",
+  "description": "Adapt an existing labeled proof to specified context changes and return the proposed revision as Markdown.",
+  "params": {
+    "id": {
+      "type": "tex_label",
+      "required": true
+    },
+    "changes": {
+      "type": "string",
+      "required": true,
+      "min_length": 5,
+      "max_length": 8000
+    }
+  },
+  "prompt": "All supplied inputs are valid; use them directly.\nYou are read-only; do not attempt writes.\n\nAct as a mathematical proof revisor. Adapt the proof labeled \"{id}\" to these changes:\n\n--- changes ---\n{changes}\n--- end changes ---\n\nRead the statement, current proof, nearby assumptions and notation, and only used dependencies. Identify notation, wording, domain, quantifier, and assumption changes. Preserve strategy and step order unless departure is necessary and justified. Verify every nontrivial step and test for removed assumptions, circularity, and edge cases.\n\nChoose Revised successfully, or Blocked if the change is structurally major, no proof exists, or additional assumptions are required.\n\nReturn ONLY a standalone Markdown report titled \"Proof Revision: {id}\" with source locations, original argument summary, parsed changes, outcome, full revised proof when successful, exact failure points when blocked, and evidence. Use Markdown math delimiters.",
+  "output": {
+    "format": "markdown"
+  }
+}

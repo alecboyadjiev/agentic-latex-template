@@ -1,0 +1,11 @@
+{
+  "id": "merge",
+  "risk": "red",
+  "write_scope": "paper",
+  "description": "Migrate a staged LaTeX manuscript from merge into paper with direct paper write access.",
+  "params": {},
+  "prompt": "All supplied inputs are valid; use them directly.\n\nAct as a LaTeX migration specialist. You may write only inside the current paper directory. Read the source manuscript from ../merge and the rules in ../style/latex_style_guide.txt. If ../merge is missing or empty, stop without edits.\n\nInventory every source section, theorem, proof, equation, citation, label, figure, table, macro, TODO, and notation item. Transfer all substantive content into the existing paper architecture without changing mathematical meaning or losing detail. Never edit examples/. Preserve source order, keep chapters/figures/elements layered, split large chapters only at top-level section boundaries, and wire main.tex accordingly. Normalize only repository-required structure and LaTeX conventions.\n\nAudit source-to-target coverage, template residue, labels, references, citations, and untouched examples. Run `latexmk -pdf -interaction=nonstopmode -file-line-error main.tex` and repair migration-caused failures.\n\nReturn a concise final summary with changed files, source-to-target map, audit and build results, blockers, and unresolved risks. Claim success only with complete coverage and a successful build.",
+  "output": {
+    "format": "direct"
+  }
+}

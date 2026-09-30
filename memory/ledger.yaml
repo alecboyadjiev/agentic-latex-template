@@ -6,10 +6,10 @@ storage:
   managed_files:
     - id: repository-workflows
       path: memory/repository-workflows.yaml
-      scope: [reports, prompt-workflows, artifact-location, markdown-math]
-      summary: Durable repository workflow and artifact-placement decisions used across task prompts.
+      scope: [reports, command-agents, risk-levels, worktrees, artifact-location, handler-validation, input-contracts, cli-help, positional-params, prompt-minimalism, detached-launches, activity-logs, parallel-batches, pdf-cache, pdf-source-access, markdown-math]
+      summary: Durable command-agent risk, CLI parameter/help, validation, prompt-minimalism, worktree, report, live-log, PDF-cache access, concurrency, and artifact-placement decisions.
       format: yaml-records-v1
-      updated: 2026-09-08
+      updated: 2026-09-16
   topology_history:
     - date: 2026-09-08
       operation: create
@@ -78,22 +78,20 @@ system_records:
     scope:
       - memory
       - AGENTS.md
-      - prompts/1 - Transfer and Maintenance
-      - prompts/2 - Paper Tasks
-      - prompts/3 - Mathematical Tasks
+      - agent.py
+      - agents
     kind: decision
     status: verified
-    summary: Every repository agent starts at memory/ledger.yaml through root AGENTS.md; the ledger is a compact dynamic manifest, while agents create and reorganize registered memory files according to observed retrieval needs without a fixed taxonomy.
-    rationale: A fixed entry point makes discovery reliable, while agent-owned managed files prevent a monolithic ledger and allow the database topology to improve with repository work. AGENTS.md and this ledger own general memory behavior; task prompts retain only domain-specific retrieval, evidence, writeback, validation, and reporting hooks.
+    summary: Interactive repository agents maintain durable memory; green/yellow command agents are read-only artifact generators, while red command agents are exempt from memory writes and restricted to their declared paper write scope.
+    rationale: Command-agent exceptions avoid contradictory writeback requirements and ensure red agents cannot use memory maintenance to escape the paper-only boundary.
     evidence:
       - memory/ledger.yaml#canonical_entry
       - memory/ledger.yaml#protocol
       - AGENTS.md#durable-memory
-      - prompts/1 - Transfer and Maintenance/
-      - prompts/2 - Paper Tasks/
-      - prompts/3 - Mathematical Tasks/
-      - prompts/4 - Dev/Memory Implementer.txt#SCOPE
-    updated: 2026-09-04
+      - AGENTS.md#command-agents
+      - agent.py
+      - agents/
+    updated: 2026-09-15
     history:
       - date: 2026-09-04
         prior_status: verified
@@ -116,6 +114,22 @@ system_records:
           - prompts/1 - Transfer and Maintenance/
           - prompts/2 - Paper Tasks/
           - prompts/3 - Mathematical Tasks/
+      - date: 2026-09-13
+        prior_status: verified
+        prior_summary: Every repository agent starts at memory/ledger.yaml through root AGENTS.md; the ledger is a compact dynamic manifest, while agents create and reorganize registered memory files according to observed retrieval needs without a fixed taxonomy.
+        reason: Read-only JSON command agents now return artifacts for agent.py to write and therefore cannot satisfy interactive memory-writeback requirements.
+        evidence:
+          - agent.py
+          - agents/
+          - AGENTS.md#read-only-command-agents
+      - date: 2026-09-15
+        prior_status: verified
+        prior_summary: Interactive repository agents use memory/ledger.yaml as the compact dynamic manifest and maintain registered memory files; read-only command agents launched by agent.py may consult memory when useful but are exempt from writeback because the wrapper owns their only artifact write.
+        reason: The command system now includes red paper-scoped direct writers as well as green/yellow read-only artifact agents, and the legacy prompts directory was removed.
+        evidence:
+          - agent.py
+          - agents/
+          - AGENTS.md#command-agents
     relations:
       supersedes: []
       superseded_by: []

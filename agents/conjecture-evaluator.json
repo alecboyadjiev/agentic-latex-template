@@ -1,0 +1,15 @@
+{
+  "id": "conjecture-evaluator",
+  "risk": "green",
+  "description": "Evaluate one labeled conjecture and return a rigorous Markdown report.",
+  "params": {
+    "id": {
+      "type": "tex_label",
+      "required": true
+    }
+  },
+  "prompt": "All supplied inputs are valid; use them directly.\nYou are read-only; do not attempt writes.\n\nAct as a mathematical conjecture evaluator. Evaluate the statement labeled \"{id}\" using its active assumptions, notation, and only necessary repository dependencies.\n\nSweep boundary and degenerate cases; attempt a direct proof; use failed steps to guide counterexample search; then try stronger proof methods. Check every proof or counterexample against all assumptions. Separate observations, deductions, and speculation. Do not add assumptions before judging the original claim.\n\nChoose exactly one verdict: Proved, Disproved, Open from current analysis, or Blocked.\n\nReturn ONLY a standalone Markdown report titled \"Conjecture Evaluation: {id}\" with source location, statement and assumptions, stage results, verdict, complete proof or instantiated counterexample when available, precise bottlenecks otherwise, evidence status, and minimal viable repairs if relevant. Use Markdown math delimiters.",
+  "output": {
+    "format": "markdown"
+  }
+}
