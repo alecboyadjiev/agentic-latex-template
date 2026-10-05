@@ -3,13 +3,29 @@ from __future__ import annotations
 import unittest
 
 from metasrc.definitions import (
-    COMMON_PERMISSION_INSTRUCTION, LEGACY_READ_ONLY_INSTRUCTION,
+    COMMON_PERMISSION_INSTRUCTION, COMPLETION_CONTRACT_INSTRUCTION,
+    LEGACY_READ_ONLY_INSTRUCTION,
     RED_PERMISSION_INSTRUCTION, load_agent,
 )
 from metasrc.paths import REPO_ROOT
+from metasrc.errors import AgentError
+from metasrc.definitions import validate_agent_config
 
 
 class DefinitionMigrationTests(unittest.TestCase):
+    def test_obsolete_bare_return_contract_is_rejected(self) -> None:
+        config = {
+            "id": "sample", "risk": "green", "description": "sample", "params": {},
+            "prompt": (
+                "All supplied inputs are valid; use them directly.\n"
+                "You may write inside agent-data/ and are read-only elsewhere.\n\n"
+                "Return ONLY a report."
+            ),
+            "output": {"format": "markdown"},
+        }
+        with self.assertRaisesRegex(AgentError, "completion contract|bare-artifact"):
+            validate_agent_config(config)
+
     def test_permissions_and_required_papers(self) -> None:
         paper_wide = {
             "merge", "refine-tex-directory", "evaluate-references",
@@ -20,6 +36,8 @@ class DefinitionMigrationTests(unittest.TestCase):
             permission = RED_PERMISSION_INSTRUCTION if config["risk"] == "red" else COMMON_PERMISSION_INSTRUCTION
             self.assertIn(permission, config["prompt"])
             self.assertNotIn(LEGACY_READ_ONLY_INSTRUCTION, config["prompt"])
+            self.assertEqual(config["prompt"].count(COMPLETION_CONTRACT_INSTRUCTION), 1)
+            self.assertNotIn("Return ONLY", config["prompt"])
             if config["id"] in paper_wide:
                 self.assertEqual(config["params"]["paper"], {"type": "paper_name", "required": True})
                 self.assertNotIn("papers/template/", config["prompt"])
@@ -34,4 +52,3 @@ class DefinitionMigrationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

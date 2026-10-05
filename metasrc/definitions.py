@@ -37,6 +37,15 @@ RED_PERMISSION_INSTRUCTION = (
     "read-only elsewhere."
 )
 LEGACY_READ_ONLY_INSTRUCTION = "You are read-only; do not attempt writes."
+COMPLETION_CONTRACT_INSTRUCTION = (
+    'End every turn with exactly one JSON object containing only "task" and "message". '
+    'Set "task" to "completed" only when all stated completion criteria hold; otherwise '
+    'set it to "not completed" and explain the blocker or remaining work in "message". '
+    'A completed "message" must be self-contained: include the complete current artifact '
+    'for handler-owned outputs, or the concise changed-files, checks, and build summary for '
+    'direct-edit outputs.'
+)
+OBSOLETE_RETURN_PATTERN = re.compile(r"\bReturn ONLY\b", re.IGNORECASE)
 PARAM_NAME_PATTERN = re.compile(r"[A-Za-z][A-Za-z0-9_]*")
 
 
@@ -136,6 +145,10 @@ def validate_agent_config(config: object, expected_id: str | None = None) -> dic
         raise AgentError("Agent prompt canonical preamble must occur exactly once.")
     if LEGACY_READ_ONLY_INSTRUCTION in prompt:
         raise AgentError("Agent prompt contains the obsolete blanket read-only line.")
+    if prompt.count(COMPLETION_CONTRACT_INSTRUCTION) != 1:
+        raise AgentError("Agent prompt must contain the canonical completion contract exactly once.")
+    if OBSOLETE_RETURN_PATTERN.search(prompt):
+        raise AgentError("Agent prompt contains the obsolete bare-artifact return form.")
 
     write_scope = config.get("write_scope")
     if risk == "red":

@@ -9,6 +9,7 @@ from metasrc.maintenance.base import MaintenanceResult, default_registry
 from metasrc.maintenance.runner import run_maintenance
 from metasrc.orchestration import execute_agent
 from metasrc.providers.base import ModelResponse
+from metasrc.definitions import COMPLETION_CONTRACT_INSTRUCTION
 
 
 class FakeTask:
@@ -49,7 +50,10 @@ class MaintenanceTests(unittest.TestCase):
                 stderr = request.run_directory / "stderr.log"
                 stdout.write_text("", encoding="utf-8")
                 stderr.write_text("", encoding="utf-8")
-                return ModelResponse("artifact", "fake", request.model, 0, stdout, stderr, None)
+                return ModelResponse(
+                    json.dumps({"task": "completed", "message": "artifact"}),
+                    "fake", request.model, 0, stdout, stderr, None,
+                )
 
         class Task(FakeTask):
             def run(self, workspace_root: Path) -> MaintenanceResult:
@@ -66,7 +70,8 @@ class MaintenanceTests(unittest.TestCase):
                 "prompt": (
                     "All supplied inputs are valid; use them directly.\n"
                     "You may write inside agent-data/ and are read-only elsewhere.\n\n"
-                    "Return ONLY a sample report."
+                    "Completion criteria: complete the sample report.\n\n"
+                    + COMPLETION_CONTRACT_INSTRUCTION
                 ),
                 "output": {"format": "markdown"},
             }

@@ -7,7 +7,7 @@ from typing import Sequence
 
 from metasrc.definitions import load_agent, render_template
 from metasrc.errors import AgentError
-from metasrc.handlers.outputs import get_output_path, normalize_result, write_result
+from metasrc.handlers.outputs import get_output_path
 from metasrc.handlers.runs import (
     append_manager_log, create_run_directory, update_run, write_initial_run,
 )
@@ -15,6 +15,9 @@ from metasrc.maintenance.base import MaintenanceTask
 from metasrc.maintenance.runner import MaintenanceError, run_maintenance
 from metasrc.providers.base import ModelProvider, ModelRequest
 from metasrc.providers.codex_cli import CodexCliProvider, validate_model_settings
+from metasrc.sessions.completion import (
+    COMPLETION_SCHEMA, commit_completed_message, parse_completion_envelope,
+)
 from metasrc.validation.inputs import ValidatedInputs, validate_inputs
 
 
@@ -105,7 +108,7 @@ def prepare_invocation(
     placeholder = workspace / ".agent-runs" / "pending"
     request = ModelRequest(
         prompt=prompt, model=model, reasoning=reasoning, workspace_root=workspace,
-        working_directory=working, writable_roots=roots, output_schema=None,
+        working_directory=working, writable_roots=roots, output_schema=COMPLETION_SCHEMA,
         run_directory=placeholder, stream_output=stream_output,
         enable_event_log=enable_json_log,
     )
@@ -129,12 +132,6 @@ def execute_agent(
         agent_id, supplied, model, reasoning, enable_json_log, stream_output,
         workspace_root, active_provider, reserve_output=False,
     )
-    if prepared.config["output"]["format"] == "markdown":
-        reserved = get_output_path(
-            prepared.config, prepared.inputs.values, reserve=True,
-            workspace_root=prepared.request.workspace_root,
-        )
-        prepared = replace(prepared, destination=reserved)
     run_dir = create_run_directory(prepared.request.workspace_root, agent_id)
     request = replace(prepared.request, run_directory=run_dir)
     active_provider.validate(request)
@@ -159,12 +156,16 @@ def execute_agent(
         results = run_maintenance(request.workspace_root, maintenance_tasks, log)
         update_run(run_dir, maintenance=[item.as_dict() for item in results])
         response = active_provider.invoke(request)
-        if prepared.config["output"]["format"] != "direct":
-            assert prepared.destination is not None
-            normalized = normalize_result(
-                response.final_text, prepared.config["output"]["format"], prepared.destination
-            )
-            write_result(normalized, prepared.destination, prepared.overwrite)
+        envelope = parse_completion_envelope(response.final_text)
+        if envelope.task != "completed":
+            update_run(run_dir, status="incomplete", exit_code=response.exit_code)
+            log("COMPLETE not completed")
+            return {"agent": agent_id, "status": "incomplete", "output": None, "run": str(run_dir)}
+        committed = commit_completed_message(
+            envelope, prepared.config, prepared.inputs.values,
+            prepared.request.workspace_root,
+        )
+        prepared = replace(prepared, destination=committed.artifact)
         update_run(
             run_dir, status="success", exit_code=response.exit_code,
             stdout=str(response.stdout_path), stderr=str(response.stderr_path),

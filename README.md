@@ -64,11 +64,27 @@ Paper-wide agents `merge`, `refine-tex-directory`, `evaluate-references`, `preli
 
 Every model process may write beneath `agent-data/` and is read-only elsewhere. A red process receives one additional writable root: its selected paper. The repository root, other papers, `reports/`, root `README.md`, and `agents/` are never granted as model-writable roots. Handler-owned outputs are written only after return validation. The provider working directory is `agent-data/` for green/yellow agents and the resolved paper for red agents.
 
-Single report jobs and yellow jobs detach by default; use `--foreground` to wait. Report-only batches retain their existing concurrent behavior. Red and yellow workflows may offer an isolated worktree; the active worktree becomes the root for paper discovery, validation, maintenance, and outputs.
+Every actual launch creates a persistent Codex chat and prints the lowest available numeric session ID. Green report and yellow launches continue in the background by default. Red non-worktree launches attach by default, and `--foreground` explicitly attaches any single launch. Closing an attached terminal does not stop the agent.
+
+List or reopen living agents at any time:
+
+```powershell
+python agent.py --sessions
+python agent.py --session 2
+python agent.py --interrupt 2
+python agent.py --delete 2
+python agent.py --delete 2 --force
+```
+
+An attached console prints the full user-agent transcript and streams complete reasoning-summary updates into terminal scrollback without fixed-width clipping. The accumulated summary remains with the live session across supervisor restarts. Keyboard input is handled independently of the 500 ms status/spinner refresh, buffered characters are consumed immediately, and typed steering text remains visible while a turn executes. Ordinary text steers an executing turn or starts a new turn for an incomplete session. `/interrupt`, `/delete`, and `/exit` control the session. One-shot deletion asks for confirmation; non-interactive deletion requires `--force`.
+
+Agents finish each turn with a structured `completed` or `not completed` envelope. Only a self-contained `completed` message that passes the existing output validator is committed. Incomplete, interrupted, failed, malformed, or artifact-invalid turns remain available for follow-up and do not create a final handler-owned artifact. Certified sessions delete their provider chat automatically and release their numeric ID; minimal receipts remain under `.agent-runs/receipts/`.
+
+Report-only batches launch independent persistent sessions concurrently and record UUID-keyed results under `.agent-runs/batches/`. Red and yellow workflows may offer an isolated worktree. Worktree creation accepts a dirty source checkout: it creates a normal local-`HEAD` worktree and overlays the complete task-visible source state, including staged, unstaged, untracked, ignored, and deleted files. Root `.git` and `.agent-runs` are excluded. No source commit or stash is created, and the resulting worktree is preserved for review after completion or deletion.
 
 ## Maintenance and PDF cache
 
-Every actual provider invocation runs registered maintenance after all request validation and immediately before the provider call. Help and `--validate-only` do not run maintenance. The initial ordered registry contains only `pdf-cache`.
+Every new provider turn runs registered maintenance after validation and immediately before `turn/start`; steering an active turn does not rerun maintenance. Help and `--validate-only` do not run maintenance or start the session supervisor. The initial ordered registry contains only `pdf-cache`.
 
 Run maintenance manually:
 
@@ -94,15 +110,23 @@ Agents must use cached text for source PDFs and may directly inspect a PDF only 
 
 ## Handler architecture
 
-Root `agent.py` imports and invokes `metasrc.cli.main`. The modules beneath `metasrc/` separately own definitions, typed inputs and labels, provider-neutral requests, Codex CLI adaptation, handler outputs/runs/worktrees, orchestration, and generic maintenance. See [`metasrc/README.md`](metasrc/README.md) for extension contracts and execution order.
+Root `agent.py` imports and invokes `metasrc.cli.main`. The modules beneath `metasrc/` separately own definitions, typed inputs and labels, persistent session state and IPC, the Codex app-server adapter, handler outputs/receipts/worktrees, orchestration, and generic maintenance. See [`metasrc/README.md`](metasrc/README.md) for extension contracts and transaction order.
 
 ## Verification
 
 ```powershell
 python -B -m unittest discover -s tests -v
 python -B agent.py --maintenance
+python -B agent.py --sessions
 python -B agent.py --agent merge --p "template" --validate-only
 python -B agent.py --agent refine-tex-directory --p "paper=template" --validate-only
 python -B agent.py --agent evaluate-references --p "paper=template" --validate-only
 python -B agent.py --agent proof-reviewer --p "id=thm:template-convergence" --p "paper=template" --validate-only
+```
+
+The default suite uses a fake JSONL app server. To exercise the installed authenticated Codex app server with a disposable thread that is deleted by the test:
+
+```powershell
+$env:AGENT_SESSION_INTEGRATION = "1"
+python -B -m unittest tests.test_live_session_integration -v
 ```

@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
 import unittest
 
 from metasrc.cli import format_agent_help
@@ -39,6 +45,24 @@ class ParameterParsingTests(unittest.TestCase):
     def test_extra_value_is_rejected(self) -> None:
         with self.assertRaisesRegex(AgentError, "Too many --param values"):
             parse_param_assignments(["target", "changes", "extra"], self.specs)
+
+
+class WrapperArgumentTests(unittest.TestCase):
+    def test_json_handoff_preserves_multiline_quotes_and_unicode(self) -> None:
+        payload = 'First line with "quoted text".\nMath: $x \\to y$.\nUnicode: →.'
+        with tempfile.TemporaryDirectory() as temporary:
+            args_path = Path(temporary) / "args.json"
+            args_path.write_text(json.dumps([
+                "--agent", "spec-designer", "--param", payload, "--validate-only",
+            ]), encoding="utf-8")
+            environment = dict(os.environ)
+            environment["AGENT_WRAPPER_ARGS_FILE"] = str(args_path)
+            result = subprocess.run(
+                [sys.executable, "-B", "agent.py"], cwd=REPO_ROOT, env=environment,
+                text=True, encoding="utf-8", stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("VALID: spec-designer", result.stdout)
 
 
 class PromptContractTests(unittest.TestCase):

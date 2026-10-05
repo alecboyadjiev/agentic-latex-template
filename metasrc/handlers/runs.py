@@ -15,6 +15,7 @@ def create_run_directory(workspace_root: Path, agent_id: str) -> Path:
 
 
 def atomic_json(path: Path, value: object) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(f".{path.name}.tmp")
     temporary.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     temporary.replace(path)
@@ -37,4 +38,3 @@ def append_manager_log(run_dir: Path, message: str) -> None:
     timestamp = datetime.now().astimezone().isoformat(timespec="milliseconds")
     with (run_dir / "manager.log").open("a", encoding="utf-8") as stream:
         stream.write(f"[{timestamp}] {message}\n")
-
